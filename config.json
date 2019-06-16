@@ -1,0 +1,16 @@
+{
+    "welcomechannelname": "👋welcome-leave",
+    "welcomechannelenable": true,
+
+    "reportchannel": "report-logs",
+
+    "color": "#dd0404",
+    "footer": "© Titan - Developed by Quantum#6409",
+
+    "botstatus": "⚠",
+    "botstatusonline": "Under Development. Usable",
+
+    "token": "NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ",
+    "prefix": "-",
+    "name": "Titan"
+}
