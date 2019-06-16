@@ -21,7 +21,7 @@ Client.on("ready", () => {
 
 //                                    GUILD MEMBER ADD/REMOVE TRIGGERS
 
-//                                           YET TO BE TESTED
+//                                           BUILD SUCCEEDED
 
 Client.on("guildMemberAdd", member => {
     if (config.welcomechannelenable = true) {
@@ -53,9 +53,25 @@ Client.on("guildMemberRemove", member => {
     };
 });
 
+//                                      HELP COMMAND
+
+//                                     BUILD SUCCEEDED
+
+Client.on("message", msg => {
+    if (msg.content.startsWith((prefix) + "help")) {
+        const help = new discord.RichEmbed()
+        .setTitle("[required] field. <optional> field.")
+        .addField("General Comamnds", "**ping** - Pong!\n**report** - Report someone on the server. -report [user] [reason]\n**status** - Shows the server status")
+        .addField("Admin Commands", "**kick** - Kick someone from the server. -kick [user] <reason>\n**ban** - Ban someone from the server. -ban [user] <user>")
+        .setColor(color)
+        .setFooter(footer);
+        msg.channel.send(help)
+    }
+});
+
 //                                      KICK COMMAND
 
-//                                      MINOR TWEAKS
+//                                     BUILD SUCCEEDED
 
 Client.on("message", (msg) => {
     if (!msg.guild) return;
@@ -109,7 +125,7 @@ Client.on("message", (msg) => {
 
 //                                             BAN COMMAND
 
-//                                             MINOR TWEAKS
+//                                           BUILD SUCCEEDED
 Client.on("message", (msg) => {
     if (!msg.guild) return;
     // check if user has permissions
