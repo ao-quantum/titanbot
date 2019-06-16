@@ -66,7 +66,7 @@ Client.on("ready", async () => {
 
 Client.on("guildMemberAdd", member => {
     if (config.welcomechannelenable = true) {
-        var channel = member.guild.channels.get("573124496681205761");
+        var channel = member.guild.channels.get(config.welcomechannel);
 
         if (!channel) return;
         const guildmemberaddembed = new discord.RichEmbed()
@@ -82,7 +82,7 @@ Client.on("guildMemberRemove", member => {
     var channelname = config.welcomechannelname;
 
     if (config.welcomechannelenable = true) {
-        var channel = member.guild.channels.get("573124496681205761");
+        var channel = member.guild.channels.get(config.welcomechannel);
 
         if (!channel) return;
         const guildMemberRemoveEmbed = new discord.RichEmbed()
@@ -233,7 +233,7 @@ Client.on("message", msg => {
 
 Client.on("message", msg => {
     if (msg.content.startsWith((prefix) + "status")) {
-        const status = request('https://mcapi.xdefcon.com/server/144.217.139.188/full/json', { json: true }, (err, res, body) => {
+        const status = request(config.serverip, { json: true }, (err, res, body) => {
             if (err) { return console.log(err); }
 
             let statusIcon;
@@ -293,7 +293,7 @@ Client.on("message", msg => {
         const member = msg.mentions.users.first();
         const author = msg.author;
 
-        const channel = Client.channels.get("574058435566370820"); // Channel ID
+        const channel = Client.channels.get(config.reportchannel); // Channel ID
         if (!channel) return; // If its not a channel, stop
 
         if (!member) { // if member not found

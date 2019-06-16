@@ -1,10 +1,12 @@
 {
-    "welcomechannelname": "👋welcome-leave",
+    "welcomechannel": "573124496681205761",
     "welcomechannelenable": true,
 
-    "presence": true,
+    "serverip": "https://mcapi.xdefcon.com/server/144.217.139.188/full/json",
 
-    "reportchannel": "report-logs",
+    "reportchannel": "574058435566370820",
+
+    "presence": true,
 
     "color": "#dd0404",
     "footer": "© Titan - Developed by Quantum#6409",
