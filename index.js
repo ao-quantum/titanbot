@@ -4,6 +4,7 @@ const config = require('./config.json');
 const fs = require('fs');
 const getJSON = require('get-json');
 const request = require('request');
+const delay = require('delay');
 
 const prefix = config.prefix
 
@@ -12,12 +13,52 @@ const footer = config.footer;
 
 Client.login(config.token);
 
-
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
     console.log(`${config.name} is online on ${Client.guilds.size} servers`);
+    Client.user.setStatus('dnd');
 });
 
+Client.on("ready", async () => {
+    while (config.presence == true) {
+        Client.user.setPresence({
+            game: {
+                name: 'on TitanForgedMC',
+                type: "PLAYING",
+                url: "https://discord.gg/D9aQy5j"
+            },
+            status: 'dnd'
+        })
+        await delay(3000)
+        Client.user.setPresence({
+            game: {
+                name: 'Currently in Alpha',
+                type: "PLAYING",
+                url: "https://discord.gg/D9aQy5j"
+            },
+            status: 'dnd'
+        })
+        await delay(3000)
+        Client.user.setPresence({
+            game: {
+                name: 'your commands',
+                type: "LISTENING",
+                url: "https://discord.gg/D9aQy5j"
+            },
+            status: 'dnd'
+        })
+        await delay(3000)
+        Client.user.setPresence({
+            game: {
+                name: '-help',
+                type: "WATCHING",
+                url: "https://discord.gg/D9aQy5j"
+            },
+            status: 'dnd'
+        })
+        await delay(3000)
+    };
+});
 
 //                                    GUILD MEMBER ADD/REMOVE TRIGGERS
 

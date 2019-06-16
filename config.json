@@ -2,6 +2,8 @@
     "welcomechannelname": "👋welcome-leave",
     "welcomechannelenable": true,
 
+    "presence": true,
+
     "reportchannel": "report-logs",
 
     "color": "#dd0404",
