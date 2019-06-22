@@ -11,7 +11,7 @@ const prefix = config.prefix
 const color = config.color;
 const footer = config.footer;
 
-Client.login(config.token);
+Client.login(process.env.titanbot_token);
 
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
