@@ -5,13 +5,28 @@ const fs = require('fs');
 const getJSON = require('get-json');
 const request = require('request');
 const delay = require('delay');
+const mysql = require('mysql');
 
 const prefix = config.prefix
 
 const color = config.color;
 const footer = config.footer;
 
-Client.login(process.env.titanbot_token).catch(console.error);
+Client.login(process.env.titantoken).catch(console.error);
+
+const con = mysql.createConnection({
+    host: "54.39.133.237",
+    database: "database",
+    user: "user",
+    password: "password",
+    charset: "utf8mb4_unicode_ci"
+});
+
+con.connect(err => {
+    if (err) throw err;
+    console.log("Connected to MySql database");
+    con.query("SHOW TABLES", console.log)
+});
 
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
@@ -108,6 +123,34 @@ Client.on("message", msg => {
         .setFooter(footer);
         msg.channel.send(help)
     }
+});
+
+//                                     XP LEVEL SYSTEM
+
+//                                     IN DEVELOPMENT
+
+function generateXp() {
+    let max = 10;
+    let min = 1;
+
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+Client.on("message", msg => {
+    con.query(`SELECT * FROM titanbot_xp WHERE id = '${msg.author.id}'`, (err, rows) => {
+        if (err) throw err;
+
+        let sql;
+        let genxp = `${generateXp()}`;
+
+        if (rows.length < 1) {
+            con.query(`INSERT INTO titanbot_xp (id, xp) VALUES ('${msg.author.id}', ${generateXp()})`, console.log)
+        } else {
+            let xp = rows[0].xp;
+
+            con.query(`UPDATE titanbot_xp SET xp = ${xp + generateXp()} WHERE id = '${msg.author.id}'`, console.log)
+        }
+    });
 });
 
 //                                      KICK COMMAND
@@ -246,10 +289,21 @@ Client.on("message", msg => {
                 statusIcon = "❌";
                 statusvalue = "Server is Offline";
             };
+
+            let sqlstatus;
+            let sqlicon
+            if (con) {
+                sqlicon = "✅";
+                setStatus = "Online and functional"
+            } else {
+                sqlicon = "❌";
+                setStatus = "Not connected and/or has problems";
+            }
     
             const statusEmbed = new discord.RichEmbed()
-            .addField(`${statusIcon}  -  Minecraft Server`, `${statusvalue} Ping: ${body.ping}ms.`)
+            .addField(`${statusIcon}  -  Minecraft Server`, `${statusvalue} Ping: ${body.ping}ms`)
             .addField(`${config.botstatus}  -  Bot Status`, `The bot is ${config.botstatusonline}`)
+            .addField(`${sqlicon}  -  MySQL Database`, `MySQL Database ${setStatus}`)
             .setColor(color)
             .setFooter(footer);
     
