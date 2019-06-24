@@ -12,13 +12,13 @@ const prefix = config.prefix
 const color = config.color;
 const footer = config.footer;
 
-Client.login(process.env.titantoken).catch(console.error);
+Client.login(process.env.titanbot_token).catch(console.error);
 
 const con = mysql.createConnection({
     host: "54.39.133.237",
-    database: "database",
-    user: "user",
-    password: "password",
+    database: "customer_77991",
+    user: "customer_77991",
+    password: "7987273d7e",
     charset: "utf8mb4_unicode_ci"
 });
 
