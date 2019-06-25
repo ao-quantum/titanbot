@@ -12,7 +12,7 @@ const prefix = config.prefix
 const color = config.color;
 const footer = config.footer;
 
-Client.login(process.env.titanbot_token).catch(console.error);
+Client.login(process.env.titantoken).catch(console.error);
 
 const con = mysql.createConnection({
     host: "54.39.133.237",
@@ -25,7 +25,6 @@ const con = mysql.createConnection({
 con.connect(err => {
     if (err) throw err;
     console.log("Connected to MySql database");
-    con.query("SHOW TABLES", console.log)
 });
 
 Client.on("ready", () => {
@@ -127,7 +126,7 @@ Client.on("message", msg => {
 
 //                                     XP LEVEL SYSTEM
 
-//                                     IN DEVELOPMENT
+//                                      ALMOST DONE
 
 function generateXp() {
     let max = 10;
@@ -140,16 +139,17 @@ Client.on("message", msg => {
     con.query(`SELECT * FROM titanbot_xp WHERE id = '${msg.author.id}'`, (err, rows) => {
         if (err) throw err;
 
-        let sql;
-        let genxp = `${generateXp()}`;
+        let sql
 
         if (rows.length < 1) {
-            con.query(`INSERT INTO titanbot_xp (id, xp) VALUES ('${msg.author.id}', ${generateXp()})`, console.log)
+            sql = `INSERT INTO titanbot_xp (id, xp) VALUES ('${msg.author.id}', ${generateXp()})`;
         } else {
             let xp = rows[0].xp;
-
-            con.query(`UPDATE titanbot_xp SET xp = ${xp + generateXp()} WHERE id = '${msg.author.id}'`, console.log)
+            
+            sql = `UPDATE titanbot_xp SET xp = ${xp + generateXp()} WHERE id = '${msg.author.id}'`;
         }
+
+        con.query(sql, console.log);
     });
 });
 
