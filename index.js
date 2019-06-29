@@ -12,7 +12,7 @@ const prefix = config.prefix
 const color = config.color;
 const footer = config.footer;
 
-Client.login(process.env.titantoken).catch(console.error);
+Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
 
 const con = mysql.createConnection({
     host: "54.39.133.237",
@@ -113,10 +113,11 @@ Client.on("guildMemberRemove", member => {
 //                                     BUILD SUCCEEDED
 
 Client.on("message", msg => {
-    if (msg.content.startsWith((prefix) + "help")) {
+    if (msg.author.bot) return;
+    if (msg.content === (prefix) + 'help') {
         const help = new discord.RichEmbed()
         .setTitle("[required] field. <optional> field.")
-        .addField("General Comamnds", "**ping** - Pong!\n**report** - Report someone on the server. -report [user] [reason]\n**status** - Shows the server status")
+        .addField("General Comamnds", "**ping** - Pong!\n**report** - Report someone on the server. -report [user] [reason]\n**status** - Shows the server status\n**xp** - Shows your or the specified user's XP\n**new** - Opens a new support ticket\n**close** - Closes a ticket")
         .addField("Admin Commands", "**kick** - Kick someone from the server. -kick [user] <reason>\n**ban** - Ban someone from the server. -ban [user] <user>")
         .setColor(color)
         .setFooter(footer);
@@ -126,7 +127,7 @@ Client.on("message", msg => {
 
 //                                     XP LEVEL SYSTEM
 
-//                                      ALMOST DONE
+//                                      BUILD SUCCEEDED
 
 function generateXp() {
     let max = 10;
@@ -136,6 +137,7 @@ function generateXp() {
 }
 
 Client.on("message", msg => {
+    if (msg.author.bot) return;
     con.query(`SELECT * FROM titanbot_xp WHERE id = '${msg.author.id}'`, (err, rows) => {
         if (err) throw err;
 
@@ -149,9 +151,29 @@ Client.on("message", msg => {
             sql = `UPDATE titanbot_xp SET xp = ${xp + generateXp()} WHERE id = '${msg.author.id}'`;
         }
 
-        con.query(sql, console.log);
+        con.query(sql);
     });
 });
+
+Client.on("message", msg => {
+    if (msg.author.bot) return;
+    if (msg.content === (prefix) + 'xp') { 
+        let target = msg.mentions.users.first() || msg.author;
+
+        con.query(`SELECT * FROM titanbot_xp WHERE id = '${target.id}'`, (err, rows) => {
+            if (err) throw err;
+
+            let xp = rows[0].xp;
+
+            const xpembed = new discord.RichEmbed()
+            .setTitle(`${xp}`)
+            .setColor(color)
+            .setFooter(footer);
+
+            msg.channel.send(xpembed);
+        });
+    }
+})
 
 //                                      KICK COMMAND
 
@@ -159,8 +181,9 @@ Client.on("message", msg => {
 
 Client.on("message", (msg) => {
     if (!msg.guild) return;
+    if (msg.author.bot) return;
 
-    if (msg.content.startsWith((config.prefix) + 'kick')) {
+    if (msg.content === (prefix) + 'kick') {
         if (!msg.member.hasPermission("KICK_MEMBERS")) {
             msg.channel.send("You do not have permissions to do that!")
             return;
@@ -211,9 +234,10 @@ Client.on("message", (msg) => {
 
 //                                           BUILD SUCCEEDED
 Client.on("message", (msg) => {
+    if (msg.author.bot) return;
     if (!msg.guild) return;
     // check if user has permissions
-    if (msg.content.startsWith((config.prefix) + 'ban')) {
+    if (msg.content === (prefix) + 'ban') {
         if (!msg.member.hasPermission("BAN_MEMBERS")) {
             msg.channel.send("You do not have permissions to do that!")
             return;
@@ -265,7 +289,8 @@ Client.on("message", (msg) => {
 //                                         BUILD SUCCEEDED
 
 Client.on("message", msg => {
-    if (msg.content.startsWith((config.prefix) + 'ping')) {
+    if (msg.author.bot) return;
+    if (msg.content === (prefix) + 'ping') {
         msg.channel.send(`Pong! ${Client.ping}ms`);
     };
 });
@@ -275,7 +300,8 @@ Client.on("message", msg => {
 //                                            BUILD SUCCEEDED
 
 Client.on("message", msg => {
-    if (msg.content.startsWith((prefix) + "status")) {
+    if (msg.author.bot) return
+    if (msg.content === (prefix) + 'status') {
         const status = request(config.serverip, { json: true }, (err, res, body) => {
             if (err) { return console.log(err); }
 
@@ -318,7 +344,8 @@ Client.on("message", msg => {
 
 
 Client.on("message", msg => {
-if (msg.content.startsWith((prefix) + "help status"))    {
+    if (msg.author.bot) return;
+    if (msg.content === (prefix) + 'help status') {
         const statushelp = new discord.RichEmbed()
         .addField('✅', 'Working/Functional/Online')
         .addField('⚠', 'Problems/Being worked on')
@@ -336,7 +363,8 @@ if (msg.content.startsWith((prefix) + "help status"))    {
 //                             BUILD SUCCEEDED
 
 Client.on("message", msg => {
-    if (msg.content.startsWith((prefix) + "report")) {
+    if (msg.author.bot) return;
+    if (msg.content === (prefix + 'report')) { // -report @guywefji#2342 hacking
         
         // VARIABLES
 
@@ -368,5 +396,83 @@ Client.on("message", msg => {
         // SEND THE REPORT TO LOGS
 
         channel.send(reportembed);
+    }
+});
+
+
+Client.on("message", (msg, message) => {
+    if (msg.content.toLowerCase().startsWith(prefix + `new`)) {
+        const reason = msg.content.split(" ").slice(1).join(" ");
+        const usernm = `${msg.author.username}`
+        if (!msg.guild.roles.exists("name", "Support Team")) return msg.channel.send(`This server doesn't have a \`Support Team\` role made, so the ticket won't be opened.\nIf you are an administrator, make one with that name exactly and give it to users that should be able to see tickets.`);
+        if (msg.guild.channels.exists("name", `ticket-` + usernm)) return msg.channel.send(`You already have a ticket open.`);
+        msg.guild.createChannel(`ticket-${usernm}`, "text").then(c => {
+            let role = msg.guild.roles.find("name", "Support Team");
+            let role2 = msg.guild.roles.find("name", "@everyone");
+            c.overwritePermissions(role, {
+                SEND_MESSAGES: true,
+                READ_MESSAGES: true
+            });
+            c.overwritePermissions(role2, {
+                SEND_MESSAGES: false,
+                READ_MESSAGES: false
+            });
+            c.overwritePermissions(msg.author, {
+                SEND_MESSAGES: true,
+                READ_MESSAGES: true
+            });
+    
+            const ticketmadeembed = new discord.RichEmbed()
+            .setTitle(`✅Ticket Created!`)
+            .setDescription(`Your Ticket has been created! Your ticket is #${c.name}`)
+            .setColor(color)
+            .setFooter(footer);
+            msg.channel.send(ticketmadeembed);
+            const embed = new discord.RichEmbed()
+            .setColor(color)
+            .addField(`Hey ${msg.author.username}!`, `Please try explain why you opened this ticket with as much detail as possible. Our **Support Team** will be here soon to help.`)
+            .setFooter(footer)
+            c.send({ embed: embed });
+        }).catch(console.error);
+    }
+});
+
+Client.on("message", msg => {
+    if (msg.content.toLowerCase().startsWith(prefix + `close`)) {
+        const error = new discord.RichEmbed()
+        .addField(`Error!`, `You cannot use this command outside a ticket channel`)
+        .setColor(color)
+        .setFooter(footer);
+        if (!msg.channel.name.startsWith(`ticket-`)) return msg.channel.send(error);
+    
+        const closeconfirm = new discord.RichEmbed()
+        .addField(`Warning! Are you sure you want to continue with that action?`, `This action is irreversible.\nTo confirm, type \`-confirm\`. This request will time out in 20 seconds.`)
+        .setColor(color)
+        .setFooter(footer);
+        msg.channel.send(closeconfirm)
+        .then((m) => {
+          msg.channel.awaitMessages(response => response.content === '-confirm', {
+            max: 1,
+            time: 20000,
+            errors: ['time'],
+          })
+          .then((collected) => {
+              msg.channel.delete()
+              const cdeletesuccessdm = new discord.RichEmbed()
+              .addField(`Hey there, ${msg.author.username}`, `Thanks for contacting TitanForgedMC support.\nIf you have any further enquiries or need further help, please feel free to open another ticket!\nWe hope you have a good day!`)
+              .setColor(color)
+              .setFooter(footer);
+              msg.author.send(cdeletesuccessdm);
+            })
+            .catch(() => {
+                const notclosed = new discord.RichEmbed()
+                .setTitle(`Close request timed out. Ticket not closed`)
+                .setColor(color)
+                .setFooter(footer);
+                m.edit(notclosed).then(m2 => {
+                    m2.delete();
+              }, 3000);
+            });
+        });
     }
 });
