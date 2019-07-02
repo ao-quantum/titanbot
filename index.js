@@ -44,7 +44,7 @@ Client.on("ready", () => {
         maxDuplicatesWarning: 5,// Maximum amount of duplicate messages a user can send in a timespan before getting warned.
         maxDuplicatesBan: 10, // Maximum amount of duplicate messages a user can send in a timespan before getting banned.
         deleteMessagesAfterBanForPastDays: 7, // Deletes the message history of the banned user in x days.
-        exemptRoles: ["Bots"], // Name of roles (case sensitive) that are exempt from spam filter.
+        exemptRoles: ["Bots", "Staff"], // Name of roles (case sensitive) that are exempt from spam filter.
         exemptUsers: [] // The Discord tags of the users (e.g: MrAugu#9016) (case sensitive) that are exempt from spam filter.
       });
 });
