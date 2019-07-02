@@ -1,6 +1,7 @@
 const discord = require('discord.js');
 const Client = new discord.Client;
 const config = require('./config.json');
+const antispam = require('discord-anti-spam');
 const fs = require('fs');
 const getJSON = require('get-json');
 const request = require('request');
@@ -31,7 +32,26 @@ Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
     console.log(`${config.name} is online on ${Client.guilds.size} servers`);
     Client.user.setStatus('dnd');
+
+    //          ANTI SPAM
+
+    antispam(Client, {
+        warnBuffer: 4, // Maximum ammount of messages allowed to send in the interval time before getting warned.
+        maxBuffer: 10, // Maximum amount of messages allowed to send in the interval time before getting banned.
+        interval: 2000, // Amount of time in ms users can send the maxim amount of messages(maxBuffer) before getting banned. 
+        warningMessage: "please stop spamming!", // Message users receive when warned. (message starts with '@User, ' so you only need to input continue of it.) 
+        banMessage: "has banished from the server due to spamming!", // Message sent in chat when user is banned. (message starts with '@User, ' so you only need to input continue of it.) 
+        maxDuplicatesWarning: 5,// Maximum amount of duplicate messages a user can send in a timespan before getting warned.
+        maxDuplicatesBan: 10, // Maximum amount of duplicate messages a user can send in a timespan before getting banned.
+        deleteMessagesAfterBanForPastDays: 7, // Deletes the message history of the banned user in x days.
+        exemptRoles: ["Bots"], // Name of roles (case sensitive) that are exempt from spam filter.
+        exemptUsers: [] // The Discord tags of the users (e.g: MrAugu#9016) (case sensitive) that are exempt from spam filter.
+      });
 });
+
+Client.on("message", msg => {
+    Client.emit("checkMessage", msg);
+})
 
 Client.on("ready", async () => {
     while (config.presence == true) {
@@ -118,7 +138,7 @@ Client.on("message", msg => {
         const help = new discord.RichEmbed()
         .setTitle("[required] field. <optional> field.")
         .addField("General Comamnds", "**ping** - Pong!\n**report** - Report someone on the server. -report [user] [reason]\n**status** - Shows the server status\n**xp** - Shows your or the specified user's XP\n**new** - Opens a new support ticket\n**close** - Closes a ticket")
-        .addField("Admin Commands", "**kick** - Kick someone from the server. -kick [user] <reason>\n**ban** - Ban someone from the server. -ban [user] <user>")
+        .addField("Admin Commands", "**kick** - Kick someone from the server. -kick [user] <reason>\n**ban** - Ban someone from the server. -ban [user] <reason>")
         .setColor(color)
         .setFooter(footer);
         msg.channel.send(help)
