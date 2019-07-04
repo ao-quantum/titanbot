@@ -133,6 +133,22 @@ Client.on("guildMemberRemove", member => {
 });
 
 Client.on("message", msg => {
+    if (msg.author.bot) return;
+    if (msg.content === (prefix) + "link") {
+        const linkembed = new discord.RichEmbed()
+        .setTitle(`To link your discord account with your minecraft account, please execute "/link" in game and DM me the code`)
+        .setColor(color)
+        .setFooter(footer);
+        msg.channel.send(linkembed);
+    }
+});
+
+//                                          SUGGESTIONS COMMAND
+
+//                                            BUILD SUCCEEDED
+
+Client.on("message", msg => {
+    if (msg.author.bot) return
     if (msg.content.startsWith((prefix) + "suggest")) {
         const messageArray = msg.content.split(" ")
         const args = messageArray.slice(1);
