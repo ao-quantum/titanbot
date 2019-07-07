@@ -150,11 +150,11 @@ Client.on("message", msg => {
 Client.on("message", msg => {
     if (msg.author.bot) return
     if (msg.content.startsWith((prefix) + "suggest")) {
-        const messageArray = msg.content.split(" ")
+        const messageArray = msg.content.split(" ");
         const args = messageArray.slice(1);
-        const suggestion = args.join(" ")
+        const suggestion = args.join(" ");
 
-        const user = msg.author
+        const user = msg.author;
 
         let suggestionid = Client.channels.get(config.suggestionchannelid);
 
@@ -376,9 +376,7 @@ Client.on("message", msg => {
 Client.on("message", msg => {
     if (msg.author.bot) return
     if (msg.content === (prefix) + 'status') {
-        const status = request(config.serverip, {
-            json: true
-        }, (err, res, body) => {
+        const status = request(config.serverip, {json: true}, (err, res, body) => {
             if (err) {
                 return console.log(err);
             }
