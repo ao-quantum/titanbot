@@ -2,6 +2,8 @@
     "welcomechannel": "573124496681205761",
     "welcomechannelenable": true,
 
+    "displayname": "TitanForgedMC discord", 
+
     "serverip": "https://mcapi.xdefcon.com/server/144.217.139.188/full/json",
 
     "suggestionchannelid": "574059801303318536",
@@ -11,12 +13,11 @@
     "presence": true,
 
     "color": "#dd0404",
-    "footer": "© Titan - Developed by Quantum#6409",
+    "footer": "© Titan - Developed by Quantum#6409 | V1.3",
 
     "botstatus": "⚠",
     "botstatusonline": "Under Development. Usable",
 
     "token": "secret",
-    "prefix": "-",
     "name": "Titan"
 }

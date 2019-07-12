@@ -8,12 +8,10 @@ const request = require('request');
 const delay = require('delay');
 const mysql = require('mysql');
 
-const prefix = config.prefix
+let prefix;
 
 const color = config.color;
 const footer = config.footer;
-
-Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
 
 const con = mysql.createConnection({
     host: "54.39.133.237",
@@ -26,6 +24,14 @@ const con = mysql.createConnection({
 con.connect(err => {
     if (err) throw err;
     console.log("Connected to MySql database");
+});
+
+//               get the prefix
+con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
+    if (err) throw err;
+
+    dbprefix = rows[0].value;
+    prefix = dbprefix;
 });
 
 Client.on("ready", () => {
@@ -54,7 +60,12 @@ Client.on("message", msg => {
 })
 
 Client.on("ready", async () => {
-    while (config.presence == true) {
+    let presence
+    con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
+        if (err) throw err;
+        presence = rows[2].value
+    })
+    while (presence == "yes") {
         Client.user.setPresence({
             game: {
                 name: 'on TitanForgedMC',
@@ -103,12 +114,17 @@ Client.on("ready", async () => {
 //                                           BUILD SUCCEEDED
 
 Client.on("guildMemberAdd", member => {
-    if (config.welcomechannelenable = true) {
+    let welcomechannelenable
+    con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
+        if (err) throw err;
+        welcomechannelenable = rows[1].value
+    })
+    if (welcomechannelenable = "yes") {
         var channel = member.guild.channels.get(config.welcomechannel);
 
         if (!channel) return;
         const guildmemberaddembed = new discord.RichEmbed()
-            .setTitle(`Welcome to ${member.guild.name}, ${member.user.tag}! 🎉🎉🎉`)
+            .setTitle(`Welcome to ${config.displayname}, ${member.user.tag}! 🎉🎉🎉`)
             .setColor(color)
             .setFooter(footer);
 
@@ -117,9 +133,13 @@ Client.on("guildMemberAdd", member => {
 });
 
 Client.on("guildMemberRemove", member => {
-    var channelname = config.welcomechannelname;
+    let welcomechannelenable
+    con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
+        if (err) throw err;
+        welcomechannelenable = rows[1].value
+    })
 
-    if (config.welcomechannelenable = true) {
+    if (welcomechannelenable = "yes") {
         var channel = member.guild.channels.get(config.welcomechannel);
 
         if (!channel) return;
@@ -153,6 +173,7 @@ Client.on("message", msg => {
         const messageArray = msg.content.split(" ");
         const args = messageArray.slice(1);
         const suggestion = args.join(" ");
+        if (!suggestion) return msg.channel.send("You have not suggested anything. Please put your suggestion after `-suggest`")
 
         const user = msg.author;
 
@@ -183,8 +204,9 @@ Client.on("message", msg => {
     if (msg.content === (prefix) + 'help') {
         const help = new discord.RichEmbed()
             .setTitle("[required] field. <optional> field.")
-            .addField("General Comamnds", "**ping** - Pong!\n**report** - Report someone on the server. -report [user] [reason]\n**status** - Shows the server status\n**xp** - Shows your or the specified user's XP\n**new** - Opens a new support ticket\n**close** - Closes a ticket")
-            .addField("Admin Commands", "**kick** - Kick someone from the server. -kick [user] <reason>\n**ban** - Ban someone from the server. -ban [user] <reason>")
+            .addField("General Comamnds", "**help** - Opens this menu\n**ping** - Pong!\n**report [user] <reason>** - Report someone on the server.\n**status** - Shows the server status\n**xp <user>** - Shows your or the specified user's XP\n**suggest [suggestion]** - Suggest a feature that we should add")
+            .addField("Support Commands", "**new** - Opens a new support ticket\n**close** - Close the support ticket")
+            .addField("Admin Commands", "**kick [user] [reason]** - Kick someone from the server\n**ban [user] [reason]** - Ban someone from the server\n**prefix [new prefix]** - Set the bot prefix")
             .setColor(color)
             .setFooter(footer);
         msg.channel.send(help)
@@ -258,10 +280,7 @@ Client.on("message", (msg) => {
     if (msg.author.bot) return;
 
     if (msg.content.startsWith((prefix) + "kick")) {
-        if (!msg.member.hasPermission("KICK_MEMBERS")) {
-            msg.channel.send("You do not have permissions to do that!")
-            return;
-        }
+        if (!msg.member.hasPermission("KICK_MEMBERS")) return msg.channel.send("❌ You do not have permissions to do that!");
         //variables
         const usertokick = msg.mentions.users.first();
         const messageArray = msg.content.split(" ")
@@ -287,7 +306,8 @@ Client.on("message", (msg) => {
             .setFooter(footer);
 
         if (usertokick) {
-            const member = msg.guild.member(usertokick); // user-who-wants-to-ban-the-bad-guy variable
+            const member = msg.guild.member(usertokick); // check is user is in guild
+            if (!reason) return msg.channel.send("Please specify a reason");
             if (member) { // kick the user
                 member.kick(`${member} kicked ${usertokick} for ${reason}`).then(() => {
                     msg.channel.send(kicksucceeded);
@@ -312,10 +332,7 @@ Client.on("message", (msg) => {
     if (!msg.guild) return;
     // check if user has permissions
     if (msg.content.startsWith((prefix) + "ban")) {
-        if (!msg.member.hasPermission("BAN_MEMBERS")) {
-            msg.channel.send("You do not have permissions to do that!")
-            return;
-        }
+        if (!msg.member.hasPermission("BAN_MEMBERS")) return msg.channel.send("❌ You do not have permissions to do that!");
         //variables
         const usertoban = msg.mentions.users.first(); // bad guy variable
         const messageArray = msg.content.split(" ")
@@ -341,7 +358,8 @@ Client.on("message", (msg) => {
             .setFooter(footer);
 
         if (usertoban) {
-            const member = msg.guild.member(usertoban); // user-who-wants-to-ban-the-bad-guy variable
+            const member = msg.guild.member(usertoban); // check if user is in guild
+            if (!reason) return msg.channel.send("Please specify a reason")
             if (member) { // kick the user
                 member.ban(`${member} banned ${usertoban} for ${reason}`).then(() => {
                     msg.channel.send(bansucceed);
@@ -472,9 +490,35 @@ Client.on("message", msg => {
         // SEND THE REPORT TO LOGS
 
         channel.send(reportembed);
-    }
+    };
+
+    //                                          PREFIX COMMAND
+
+    //                                          IN DEVELOPMENT
+
+    if (msg.content.startsWith((prefix) + "prefix")) {
+
+        if (!msg.member.hasPermission("MANAGE_GUILD")) return msg.channel.send("❌ You do not have sufficient permissions to do that!");
+        messageArray = msg.content.split(" ");     // turn the message into an array, so it should be like ["-prefix", "newprefix"]
+        newprefix = `${messageArray[1]}`;           // turn the new prefix into a string
+
+        con.query(`UPDATE titanbot_cfg SET value = '${newprefix}' WHERE setting = 'prefix'`, (err, rows) => { // query mysql to change the prefix
+            if (err) throw err;                            // if theres an error, end the bot and return the error
+            console.log(`Prefix has been changed to '${newprefix}' by ${msg.author.tag}`) // log it in console
+            msg.channel.send(`✅ Prefix has been changed successfully to '${newprefix}'`)     // let the user know if its successfull
+            con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {                          // update the prefix globally
+                if (err) throw err;
+            
+                dbprefix = rows[0].value;
+                prefix = dbprefix;
+            });
+        });
+    };
 });
 
+//                                              TICKET SYSTEM
+
+//                                             BUILD SUCCEEDED
 
 Client.on("message", (msg, message) => {
     if (msg.content.toLowerCase().startsWith(prefix + `new`)) {
@@ -554,3 +598,75 @@ Client.on("message", msg => {
             });
     }
 });
+
+//                                       OITC LEADERBOARD
+
+//                                        IN DEVELOPMENT
+
+Client.on("message", msg => {
+    if (msg.content.startsWith((prefix) + "leaderboard")) {
+        const messageArray = msg.content.split(" ")
+        const top = messageArray[1]
+        request('http://144.217.139.188:8081/oitc/leaderboard', {json: true}, (err, res, body) => {
+            if (err) throw err;
+            /*
+            const leaderboard10 = new discord.RichEmbed()
+            .addField(`${body[0].name}`, `Wins: ${body[0].wins}. Loss: ${Math.floor((body[0].games) - (body[0].wins))}. Kills: ${body[0].kills}.`)
+            .addField(`${body[1].name}`, `Wins: ${body[1].wins}. Loss: ${Math.floor((body[1].games) - (body[1].wins))}. Kills: ${body[1].kills}.`)
+            .addField(`${body[2].name}`, `Wins: ${body[1].wins}. Loss: ${Math.floor((body[2].games) - (body[2].wins))}. Kills: ${body[2].kills}.`)
+            .addField(`${body[3].name}`, `Wins: ${body[3].wins}. Loss: ${Math.floor((body[3].games) - (body[3].wins))}. Kills: ${body[3].kills}.`)
+            .addField(`${body[4].name}`, `Wins: ${body[4].wins}. Loss: ${Math.floor((body[4].games) - (body[4].wins))}. Kills: ${body[4].kills}.`)
+            .addField(`${body[5].name}`, `Wins: ${body[5].wins}. Loss: ${Math.floor((body[5].games) - (body[5].wins))}. Kills: ${body[5].kills}.`)
+            .addField(`${body[6].name}`, `Wins: ${body[6].wins}. Loss: ${Math.floor((body[6].games) - (body[6].wins))}. Kills: ${body[6].kills}.`)
+            .addField(`${body[7].name}`, `Wins: ${body[7].wins}. Loss: ${Math.floor((body[7].games) - (body[7].wins))}. Kills: ${body[7].kills}.`)
+            .addField(`${body[8].name}`, `Wins: ${body[8].wins}. Loss: ${Math.floor((body[8].games) - (body[8].wins))}. Kills: ${body[8].kills}.`)
+            .addField(`${body[9].name}`, `Wins: ${body[9].wins}. Loss: ${Math.floor((body[9].games) - (body[9].wins))}. Kills: ${body[9].kills}.`)
+            .addField(`${body[10].name}`, `Wins: ${body[10].wins}. Loss: ${Math.floor((body[10].games) - (body[10].wins))}. Kills: ${body[10].kills}.`)
+            .setColor(color)
+            .setFooter(footer);
+            */
+            switch (top) {
+                case "1" || `top`:
+                    const leaderboardtop = new discord.RichEmbed()
+                        .setTitle("TitanForgedMC Top Player")
+                        .addField(`${body[0].name}`, `Wins: ${body[0].wins}. Loss: ${Math.floor((body[0].games) - (body[0].wins))}. Kills: ${body[0].kills}.`)
+                        .setColor(color)
+                        .setFooter(footer);
+                    msg.channel.send(leaderboardtop);
+                    break;
+                case 'top':
+                    msg.channel.send(leaderboardtop);
+                    break;
+                case "3":
+                    const leaderboardtop3 = new discord.RichEmbed()
+                        .setTitle("TitanForgedMC Top 3 Players")
+                        .addField(`${body[0].name}`, `Wins: ${body[0].wins}. Loss: ${Math.floor((body[0].games) - (body[0].wins))}. Kills: ${body[0].kills}.`)
+                        .addField(`${body[1].name}`, `Wins: ${body[1].wins}. Loss: ${Math.floor((body[1].games) - (body[1].wins))}. Kills: ${body[1].kills}.`)
+                        .addField(`${body[2].name}`, `Wins: ${body[2].wins}. Loss: ${Math.floor((body[2].games) - (body[2].wins))}. Kills: ${body[2].kills}.`)
+                        .setColor(color)
+                        .setFooter(footer);
+                    msg.channel.send(leaderboardtop3);
+                    break;
+                case "5":
+                    const leaderboardtop5 = new discord.RichEmbed()
+                        .setTitle("TitanForgedMC Top 5 Players")
+                        .addField(`${body[0].name}`, `Wins: ${body[0].wins}. Loss: ${Math.floor((body[0].games) - (body[0].wins))}. Kills: ${body[0].kills}.`)
+                        .addField(`${body[1].name}`, `Wins: ${body[1].wins}. Loss: ${Math.floor((body[1].games) - (body[1].wins))}. Kills: ${body[1].kills}.`)
+                        .addField(`${body[2].name}`, `Wins: ${body[2].wins}. Loss: ${Math.floor((body[2].games) - (body[2].wins))}. Kills: ${body[2].kills}.`)
+                        .addField(`${body[3].name}`, `Wins: ${body[3].wins}. Loss: ${Math.floor((body[3].games) - (body[3].wins))}. Kills: ${body[3].kills}.`)
+                        .addField(`${body[4].name}`, `Wins: ${body[4].wins}. Loss: ${Math.floor((body[4].games) - (body[4].wins))}. Kills: ${body[4].kills}.`)
+                        .setColor(color)
+                        .setFooter(footer);
+                    msg.channel.send(leaderboardtop5);
+                    break;
+            case "10":
+                    msg.channel.send("The top 10 currently does not work as there are not enough players to list")
+                    break;
+                default:
+                    msg.channel.send("The top amount must be either 1, 3, 5 or 10.")
+            };
+        });
+    };
+});
+
+Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
