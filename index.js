@@ -161,6 +161,14 @@ Client.on("message", msg => {
         .setFooter(footer);
         msg.channel.send(linkembed);
     };
+    if (msg.content === (prefix) + "rule") {
+        const rulesintro = new discord.RichEmbed()
+        .setTitle("Welcome to TitanForgedMC")
+        .setDescription("Before you do anything else, please be sure to read the rules. They may be boring but are really important and make sure you and others have a good experience on our server. Failure to comply by the rules will lead to a warning, mute and ban.")
+        .setColor(color);
+        const rule1 = new discord.RichEmbed()
+        .setTitle
+    }
 });
 
 //                                          SUGGESTIONS COMMAND
@@ -206,6 +214,7 @@ Client.on("message", msg => {
             .setTitle("[required] field. <optional> field.")
             .addField("General Comamnds", "**help** - Opens this menu\n**ping** - Pong!\n**report [user] <reason>** - Report someone on the server.\n**status** - Shows the server status\n**xp <user>** - Shows your or the specified user's XP\n**suggest [suggestion]** - Suggest a feature that we should add\n**flip** - Flips a coin")
             .addField("Support Commands", "**new** - Opens a new support ticket\n**close** - Close the support ticket")
+            .addField("Notification commands", "**sub** - Recieve notifications about all the news and important announcements\n**unsub** - Stop receiving all announcements and news")
             .addField("Admin Commands", "**kick [user] [reason]** - Kick someone from the server\n**ban [user] [reason]** - Ban someone from the server\n**prefix [new prefix]** - Set the bot prefix")
             .setColor(color)
             .setFooter(footer);
@@ -284,6 +293,36 @@ Client.on("message", msg => {
         .setColor(color);
         msg.channel.send(flipembed)
     };
+    /*
+
+    //                                    SUB & UNSUB COMMAND
+
+    */
+    if (msg.content === (prefix) + "sub") {
+        con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
+            if (err) throw err;
+            const notifyrole = rows[3].value;
+
+            msg.member.addRole(`${notifyrole}`); // 599646025757753344 599646025757753344
+            const roleadded = new discord.RichEmbed()
+            .setTitle('✅ You will now recieve notifications!')
+            .setColor(color)
+            .setFooter(footer);
+            msg.channel.send(roleadded);
+        });
+    };
+    if (msg.content === (prefix) + "unsub") {
+        con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
+            if (err) throw err;
+            notifyrole = rows[3].value;
+            msg.member.removeRole(`${notifyrole}`)
+            const roleremove = new discord.RichEmbed()
+            .setTitle("✅ Removed you from notifications list")
+            .setColor(color)
+            .setFooter(footer);
+            msg.channel.send(roleremove);
+        });
+    }
 })
 
 //                                      KICK COMMAND
