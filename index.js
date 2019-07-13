@@ -160,7 +160,7 @@ Client.on("message", msg => {
         .setColor(color)
         .setFooter(footer);
         msg.channel.send(linkembed);
-    }
+    };
 });
 
 //                                          SUGGESTIONS COMMAND
@@ -204,7 +204,7 @@ Client.on("message", msg => {
     if (msg.content === (prefix) + 'help') {
         const help = new discord.RichEmbed()
             .setTitle("[required] field. <optional> field.")
-            .addField("General Comamnds", "**help** - Opens this menu\n**ping** - Pong!\n**report [user] <reason>** - Report someone on the server.\n**status** - Shows the server status\n**xp <user>** - Shows your or the specified user's XP\n**suggest [suggestion]** - Suggest a feature that we should add")
+            .addField("General Comamnds", "**help** - Opens this menu\n**ping** - Pong!\n**report [user] <reason>** - Report someone on the server.\n**status** - Shows the server status\n**xp <user>** - Shows your or the specified user's XP\n**suggest [suggestion]** - Suggest a feature that we should add\n**flip** - Flips a coin")
             .addField("Support Commands", "**new** - Opens a new support ticket\n**close** - Close the support ticket")
             .addField("Admin Commands", "**kick [user] [reason]** - Kick someone from the server\n**ban [user] [reason]** - Ban someone from the server\n**prefix [new prefix]** - Set the bot prefix")
             .setColor(color)
@@ -268,7 +268,22 @@ Client.on("message", msg => {
                 msg.channel.send(targetxp)
             };
         });
-    }
+    };
+    if (msg.content === (prefix) + "flip") {
+        // this uses the value of generateXP function to get a random number, that random number judges the heads of tails
+        const num = generateXp();
+        let result
+        if (num <= 5) {
+            result = "Heads";
+        } else if (num >= 6) {
+            result = "Tails";
+        };
+
+        const flipembed = new discord.RichEmbed()
+        .setTitle(`${result}`)
+        .setColor(color);
+        msg.channel.send(flipembed)
+    };
 })
 
 //                                      KICK COMMAND
