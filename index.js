@@ -241,6 +241,11 @@ Client.on("message", msg => {
         }
     });
 
+
+    //                                           WARN COMMAND
+
+    //                                        SMALL BUGS REMAINING
+
     if (msg.content.startsWith((prefix) + "warn")) {
         member = msg.mentions.users.first()
         if (member) {
@@ -278,8 +283,7 @@ Client.on("message", msg => {
                     logchannel.send(warnlog) // send the log
 
                     member.send("You have been warned on TitanForgedMC for " + reason)
-                    if (rows[0]) {
-                        if (!rows[0]) return;
+                    con.query(`SELECT * FROM titanbot_warns WHERE id = '${member.id}'`, (err, rows) => {
                         if (rows[0].warns = 3) { // if the user has more than 3 warns then kick him/her
                             member.kick("Exceeding the 3 warnings").then(() => {
 
@@ -292,7 +296,7 @@ Client.on("message", msg => {
                             }).catch((err) => {
                                 return console.log(err)
                             }) // on error, 
-                        } else if (rows[0].warns <= 5) { // if the user exceeds 5 warnings then 
+                        } else if (rows[0].warns >= 5) { // if the user exceeds 5 warnings then 
                             member.ban("Exceeding the 5 warnings").then(() => {
 
                                 const exceed5warnsembed = new discord.RichEmbed()
@@ -305,7 +309,7 @@ Client.on("message", msg => {
                                 return console.log(err)
                             }); // on an error, log it
                         }
-                    }
+                    })
                 })
             } else {
                 const usernotfound = new discord.RichEmbed()
@@ -376,7 +380,7 @@ Client.on("message", msg => {
                 .setFooter(footer);
 
             const targetxp = new discord.RichEmbed()
-                .setTitle(`${target.name} has ${xp}`)
+                .setTitle(`${target.username} has ${xp}`)
                 .setColor(color)
                 .setFooter(footer);
 
@@ -384,7 +388,9 @@ Client.on("message", msg => {
                 msg.channel.send(yourxp)
             } else if (target === msg.mentions.users.first()) {
                 msg.channel.send(targetxp)
-            };
+            } else {
+
+            }
         });
     };
     if (msg.content === (prefix) + "flip") {
