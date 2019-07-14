@@ -60,12 +60,7 @@ Client.on("message", msg => {
 })
 
 Client.on("ready", async () => {
-    let presence
-    con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
-        if (err) throw err;
-        presence = rows[2].value
-    })
-    while (presence == "yes") {
+    while (true) {
         Client.user.setPresence({
             game: {
                 name: 'on TitanForgedMC',
@@ -114,11 +109,13 @@ Client.on("ready", async () => {
 //                                           BUILD SUCCEEDED
 
 Client.on("guildMemberAdd", member => {
-    let welcomechannelenable
+    let welcomechannelenable;
+    let dbwelcomechannelenable;
     con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
         if (err) throw err;
-        welcomechannelenable = rows[1].value
-    })
+        dbwelcomechannelenable = rows[1].value;
+        welcomechannelenable = dbwelcomechannelenable;
+    });
     if (welcomechannelenable = "yes") {
         var channel = member.guild.channels.get(config.welcomechannel);
 
@@ -156,18 +153,18 @@ Client.on("message", msg => {
     if (msg.author.bot) return;
     if (msg.content === (prefix) + "link") {
         const linkembed = new discord.RichEmbed()
-        .setTitle(`To link your discord account with your minecraft account, please execute "/link" in game and DM me the code`)
-        .setColor(color)
-        .setFooter(footer);
+            .setTitle(`To link your discord account with your minecraft account, please execute "/link" in game and DM me the code`)
+            .setColor(color)
+            .setFooter(footer);
         msg.channel.send(linkembed);
     };
     if (msg.content === (prefix) + "rule") {
         const rulesintro = new discord.RichEmbed()
-        .setTitle("Welcome to TitanForgedMC")
-        .setDescription("Before you do anything else, please be sure to read the rules. They may be boring but are really important and make sure you and others have a good experience on our server. Failure to comply by the rules will lead to a warning, mute and ban.")
-        .setColor(color);
+            .setTitle("Welcome to TitanForgedMC")
+            .setDescription("Before you do anything else, please be sure to read the rules. They may be boring but are really important and make sure you and others have a good experience on our server. Failure to comply by the rules will lead to a warning, mute and ban.")
+            .setColor(color);
         const rule1 = new discord.RichEmbed()
-        .setTitle
+            .setTitle
     }
 });
 
@@ -219,6 +216,111 @@ Client.on("message", msg => {
             .setColor(color)
             .setFooter(footer);
         msg.channel.send(help)
+    };
+
+    //                                        BAD WORDS FILER SYSTEM
+
+    const badwords = require('./badwords.json')
+    con.query(`SELECT * FROM titanbot_warns WHERE id = '${msg.author.id}'`, (err, rows) => {
+        if (err) throw err; //599960120834785281 is logs channel id
+
+        if (badwords.badwords.some(word => msg.content.toLowerCase().includes(word))) {
+            msg.delete()
+
+            let sql
+
+            if (rows.length < 1) {
+                sql = `INSERT INTO titanbot_warns (id, warns) VALUES ('${msg.author.id}', 1)`
+            } else {
+                let warns = rows[0].warns;
+
+                sql = `UPDATE titanbot_warns SET warns = ${warns + 1} WHERE id = '${msg.author.id}'`
+            }
+            con.query(sql)
+            msg.channel.send(`Do not swear, ${msg.author.tag}! You have been issued a warning.`)
+        }
+    });
+
+    if (msg.content.startsWith((prefix) + "warn")) {
+        member = msg.mentions.users.first()
+        if (member) {
+            user = msg.guild.member(member)
+            if (user) {
+                con.query(`SELECT * FROM titanbot_warns WHERE id = '${member.id}'`, (err, rows) => {
+                    const messageArray = msg.content.split(" ")
+                    const args = messageArray.slice(1)
+                    const reason = args.join(" ").slice(22)
+                    if (err) throw err;
+
+                    const logchannel = Client.channels.get(`${config.logchannel}`) // define log channel
+
+                    if (rows.length < 1) {
+                        sql = `INSERT INTO titanbot_warns (id, warns) VALUES ('${member.id}', 1)`
+                    } else {
+                        let warns = rows[0].warns
+                        sql = `UPDATE titanbot_warns SET warns = ${warns + 1} WHERE id = '${member.id}'`
+                    }
+                    con.query(sql) // add the warning to the user in the mysql database
+                    msg.delete() // delete the warning command
+
+                    const warnembed = new discord.RichEmbed()
+                        .setTitle(`✅ ${member.username} has been warned`)
+                        .setColor(color)
+                        .setFooter(footer);
+
+                    msg.channel.send(warnembed) // sends the warn in the chat
+
+                    const warnlog = new discord.RichEmbed()
+                        .addField(`New warning`, `${msg.author.tag} has warned ${member} for ${reason}`)
+                        .setColor(color)
+                        .setFooter(footer);
+
+                    logchannel.send(warnlog) // send the log
+
+                    member.send("You have been warned on TitanForgedMC for " + reason)
+                    if (rows[0]) {
+                        if (!rows[0]) return;
+                        if (rows[0].warns = 3) { // if the user has more than 3 warns then kick him/her
+                            member.kick("Exceeding the 3 warnings").then(() => {
+
+                                const exceed3warnsembed = new discord.RichEmbed()
+                                    .setTitle(`${member} has been automatically kicked for exceeding 3 warns`)
+                                    .setColor(color)
+                                    .setFooter(footer);
+
+                                logchannel.send(exceed3warnsembed);
+                            }).catch((err) => {
+                                return console.log(err)
+                            }) // on error, 
+                        } else if (rows[0].warns <= 5) { // if the user exceeds 5 warnings then 
+                            member.ban("Exceeding the 5 warnings").then(() => {
+
+                                const exceed5warnsembed = new discord.RichEmbed()
+                                    .setTitle(`${member} has been automatically banned for exceeding 5 warnings`)
+                                    .setColor(color)
+                                    .setFooter(footer);
+
+                                logchannel.send(exceed5warnsembed); //send the log
+                            }).catch((err) => {
+                                return console.log(err)
+                            }); // on an error, log it
+                        }
+                    }
+                })
+            } else {
+                const usernotfound = new discord.RichEmbed()
+                    .setTitle("❌ The user was not found on this server")
+                    .setColor(color)
+                    .setFooter(footer);
+                msg.channel.send(usernotfound)
+            }
+        } else {
+            const usernotmention = new discord.RichEmbed()
+                .setTitle("❌ The user was not mentioned")
+                .setColor(color)
+                .setFooter(footer);
+            msg.channel.send(usernotmention);
+        }
     }
 });
 
@@ -250,6 +352,13 @@ Client.on("message", msg => {
 
         con.query(sql);
     });
+    if (msg.content === (prefix) + "rules") {
+        const hook = new discord.WebhookClient()
+        const rulesintro = new discord.RichEmbed()
+            .setTitle("Welcome to TitanForgedMC")
+            .setDescription('We all hate rules, yes, but to ensure a safe and enjoyable place for everyone, we have to enforce rules. Failing to abide by them may lead to appropriate sanctions being taken')
+            .setColor(color);
+    }
 });
 
 Client.on("message", msg => {
@@ -289,8 +398,8 @@ Client.on("message", msg => {
         };
 
         const flipembed = new discord.RichEmbed()
-        .setTitle(`${result}`)
-        .setColor(color);
+            .setTitle(`${result}`)
+            .setColor(color);
         msg.channel.send(flipembed)
     };
     /*
@@ -305,9 +414,9 @@ Client.on("message", msg => {
 
             msg.member.addRole(`${notifyrole}`); // 599646025757753344 599646025757753344
             const roleadded = new discord.RichEmbed()
-            .setTitle('✅ You will now recieve notifications!')
-            .setColor(color)
-            .setFooter(footer);
+                .setTitle('✅ You will now recieve notifications!')
+                .setColor(color)
+                .setFooter(footer);
             msg.channel.send(roleadded);
         });
     };
@@ -317,9 +426,9 @@ Client.on("message", msg => {
             notifyrole = rows[3].value;
             msg.member.removeRole(`${notifyrole}`)
             const roleremove = new discord.RichEmbed()
-            .setTitle("✅ Removed you from notifications list")
-            .setColor(color)
-            .setFooter(footer);
+                .setTitle("✅ Removed you from notifications list")
+                .setColor(color)
+                .setFooter(footer);
             msg.channel.send(roleremove);
         });
     }
@@ -448,7 +557,9 @@ Client.on("message", msg => {
 Client.on("message", msg => {
     if (msg.author.bot) return
     if (msg.content === (prefix) + 'status') {
-        const status = request(config.serverip, {json: true}, (err, res, body) => {
+        const status = request(config.serverip, {
+            json: true
+        }, (err, res, body) => {
             if (err) {
                 return console.log(err);
             }
@@ -553,16 +664,16 @@ Client.on("message", msg => {
     if (msg.content.startsWith((prefix) + "prefix")) {
 
         if (!msg.member.hasPermission("MANAGE_GUILD")) return msg.channel.send("❌ You do not have sufficient permissions to do that!");
-        messageArray = msg.content.split(" ");     // turn the message into an array, so it should be like ["-prefix", "newprefix"]
-        newprefix = `${messageArray[1]}`;           // turn the new prefix into a string
+        messageArray = msg.content.split(" "); // turn the message into an array, so it should be like ["-prefix", "newprefix"]
+        newprefix = `${messageArray[1]}`; // turn the new prefix into a string
 
         con.query(`UPDATE titanbot_cfg SET value = '${newprefix}' WHERE setting = 'prefix'`, (err, rows) => { // query mysql to change the prefix
-            if (err) throw err;                            // if theres an error, end the bot and return the error
+            if (err) throw err; // if theres an error, end the bot and return the error
             console.log(`Prefix has been changed to '${newprefix}' by ${msg.author.tag}`) // log it in console
-            msg.channel.send(`✅ Prefix has been changed successfully to '${newprefix}'`)     // let the user know if its successfull
-            con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {                          // update the prefix globally
+            msg.channel.send(`✅ Prefix has been changed successfully to '${newprefix}'`) // let the user know if its successfull
+            con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => { // update the prefix globally
                 if (err) throw err;
-            
+
                 dbprefix = rows[0].value;
                 prefix = dbprefix;
             });
@@ -661,7 +772,9 @@ Client.on("message", msg => {
     if (msg.content.startsWith((prefix) + "leaderboard")) {
         const messageArray = msg.content.split(" ")
         const top = messageArray[1]
-        request('http://144.217.139.188:8081/oitc/leaderboard', {json: true}, (err, res, body) => {
+        request('http://144.217.139.188:8081/oitc/leaderboard', {
+            json: true
+        }, (err, res, body) => {
             if (err) throw err;
             /*
             const leaderboard10 = new discord.RichEmbed()
@@ -713,7 +826,7 @@ Client.on("message", msg => {
                         .setFooter(footer);
                     msg.channel.send(leaderboardtop5);
                     break;
-            case "10":
+                case "10":
                     msg.channel.send("The top 10 currently does not work as there are not enough players to list")
                     break;
                 default:
