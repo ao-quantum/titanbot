@@ -57,7 +57,8 @@ Client.guilds.forEach
 music.start(Client, {
     youtubeKey: "AIzaSyBCIuxN2khFS3THO-1EZhz3bktm-Id1NwQ",
     botPrefix: `-`,
-    musicPresense: true
+    musicPresense: true,
+    embedColor: "#dd0404"
 })
 
 Client.on("ready", () => {
