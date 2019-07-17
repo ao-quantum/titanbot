@@ -1,5 +1,6 @@
-const discord = require('discord.js')
-const config = require('../config/config.json')
+const discord = require('discord.js');
+const request = require('request');
+const config = require('../config/config.json');
 
 module.exports.run = (Client, msg, args) => {
     let color = config.color;

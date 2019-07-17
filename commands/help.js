@@ -5,8 +5,8 @@ module.exports.run = async (Client, msg, args) => {
     let color = config.color;
     let footer = config.footer;
     const help = new discord.RichEmbed()
-    .setTitle("[required] field. <optional> field.")
-    .addField("General Comamnds", "**help** - Opens this menu\n**ping** - Pong!\n**report [user] <reason>** - Report someone on the server.\n**status** - Shows the server status\n**xp <user>** - Shows your or the specified user's XP\n**suggest [suggestion]** - Suggest a feature that we should add\n**flip** - Flips a coin")
+    .setAuthor('TitanForgedMC Help menu', Client)
+    .addField("General Comamnds", "**help** - Opens this menu\n**ping** - Pong!\n**report [user] <reason>** - Report someone on the server.\n**status** - Shows the server status\n**xp <user>** - Shows your or the specified user's XP\n**suggest [suggestion]** - Suggest a feature that we should add\n**flip** - Flips a coin\n**link** - Link your minecraft account with your discord account")
     .addField("Support Commands", "**new** - Opens a new support ticket\n**close** - Close the support ticket")
     .addField("Notification commands", "**sub** - Recieve notifications about all the news and important announcements\n**unsub** - Stop receiving all announcements and news")
     .addField("Admin Commands", "**kick [user] [reason]** - Kick someone from the server\n**ban [user] [reason]** - Ban someone from the server")

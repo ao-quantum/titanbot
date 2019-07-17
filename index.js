@@ -6,7 +6,8 @@ const request = require('request');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
-const music = require('discord.js-musicbot-addon')
+const express = require('express');
+const app = express()
 Client.commands = new discord.Collection();
 
 Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error); //NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ
@@ -53,13 +54,13 @@ fs.readdir("./commands", (err, files) => {
     });
 });
 
-Client.guilds.forEach
-music.start(Client, {
-    youtubeKey: "AIzaSyBCIuxN2khFS3THO-1EZhz3bktm-Id1NwQ",
-    botPrefix: `-`,
-    musicPresense: true,
-    embedColor: "#dd0404"
+app.get('/www/index.html')
+
+app.use(express.static('www'), (req, res, next) => {
+    res.status(404).send("Error 404. Not found")
 })
+
+app.listen(80, () => console.log('[STARTUP] Express server is up on port 80'))
 
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
@@ -143,7 +144,7 @@ Client.on("ready", async () => {
         await delay(3000)
     };
     while (true) {
-        
+
     }
 });
 
@@ -195,13 +196,13 @@ Client.on("guildMemberRemove", member => {
 Client.on("message", msg => {
     if (msg.author.bot) return;
     //if (msg.content === (prefix) + "rule") {
-      //  const rulesintro = new discord.RichEmbed()
-        //    .setTitle("Welcome to TitanForgedMC")
-          //  .setDescription("Before you do anything else, please be sure to read the rules. They may be boring but are really important and make sure you and others have a good experience on our server. Failure to comply by the rules will lead to a warning, mute and ban.")
-       //     .setColor(color);
-       // const rule1 = new discord.RichEmbed()
-         //   .setTitle
-   // }
+    //  const rulesintro = new discord.RichEmbed()
+    //    .setTitle("Welcome to TitanForgedMC")
+    //  .setDescription("Before you do anything else, please be sure to read the rules. They may be boring but are really important and make sure you and others have a good experience on our server. Failure to comply by the rules will lead to a warning, mute and ban.")
+    //     .setColor(color);
+    // const rule1 = new discord.RichEmbed()
+    //   .setTitle
+    // }
 });
 
 //                                     XP LEVEL SYSTEM
