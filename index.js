@@ -98,7 +98,7 @@ Client.on("message", msg => {
     if (commandFile) {
         commandFile.run(Client, msg, args)
     }
-})
+});
 
 Client.on("ready", async () => {
     while (true) {
