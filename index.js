@@ -6,8 +6,7 @@ const request = require('request');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
-const music = require('discord.js-musicbot-addon');
-const ffmpeg = require('ffmpeg-binaries')
+const music = require('discord.js-musicbot-addon')
 Client.commands = new discord.Collection();
 
 Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error); //NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ
