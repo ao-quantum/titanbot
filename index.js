@@ -54,6 +54,7 @@ fs.readdir("./commands", (err, files) => {
     });
 });
 
+const port = process.env.port || 3000
 app.get('/www/index.html')
 
 app.use(express.static('www'), (req, res, next) => {
