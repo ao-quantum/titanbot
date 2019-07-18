@@ -6,8 +6,8 @@ const request = require('request');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
-//const express = require('express');
-//const app = express()
+const express = require('express');
+const app = express()
 Client.commands = new discord.Collection();
 
 Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error); //NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ
@@ -53,11 +53,11 @@ fs.readdir("./commands", (err, files) => {
         Client.commands.set(props.help.name, props);
     });
 });
-/*
+
 const port = process.env.port || 3000
-app.get('/www/index.html', (err, res, req) => {
+app.get('/www', (err, res, req) => {
     if (err) return err;
-})
+});
 
 app.use(express.static('www'), (req, res, next, err) => {
     if (err) return err;
@@ -68,7 +68,7 @@ app.listen(80, (err) => {
     if (err) return err;
     console.log('[STARTUP] Express server is up on port 80')
 })
-*/
+
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
     console.log(`${config.name} is online on ${Client.guilds.size} servers`);
