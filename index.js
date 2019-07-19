@@ -6,11 +6,11 @@ const request = require('request');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
-const express = require('express');
-const app = express()
+//const express = require('express');
+//const app = express()
 Client.commands = new discord.Collection();
 
-Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error); //NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ
+Client.login(process.env.titanbot_token).catch(console.error);
 
 let prefix;
 
@@ -18,10 +18,10 @@ const color = config.color;
 const footer = config.footer;
 
 const con = mysql.createConnection({
-    host: "54.39.133.237",
-    database: "customer_77991",
-    user: "customer_77991",
-    password: "7987273d7e",
+    host: process.env.titanbot_sqlhost,
+    database: process.env.titanbot_dbuser,
+    user: process.env.titanbot_dbuser,
+    password: process.env.titanbot_sqlpsw,
     charset: "utf8mb4_unicode_ci"
 });
 
@@ -53,8 +53,8 @@ fs.readdir("./commands", (err, files) => {
         Client.commands.set(props.help.name, props);
     });
 });
-
-const port = process.env.port || 3000
+/*
+const port = 80
 app.get('/www', (err, res, req) => {
     if (err) return err;
 });
@@ -68,7 +68,7 @@ app.listen(80, (err) => {
     if (err) return err;
     console.log('[STARTUP] Express server is up on port 80')
 })
-
+*/
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
     console.log(`${config.name} is online on ${Client.guilds.size} servers`);
