@@ -6,8 +6,8 @@ const request = require('request');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
-//const express = require('express');
-//const app = express()
+const express = require('express');
+const app = express()
 Client.commands = new discord.Collection();
 
 Client.login(process.env.titanbot_token).catch(console.error);
@@ -18,10 +18,10 @@ const color = config.color;
 const footer = config.footer;
 
 const con = mysql.createConnection({
-    host: process.env.titanbot_sqlhost,
-    database: process.env.titanbot_dbuser,
-    user: process.env.titanbot_dbuser,
-    password: process.env.titanbot_sqlpsw,
+    host: "na-sql.pebblehost.com",
+    database: "customer_77991",
+    user: "customer_77991",
+    password: "7987273d7e",
     charset: "utf8mb4_unicode_ci"
 });
 
@@ -53,7 +53,7 @@ fs.readdir("./commands", (err, files) => {
         Client.commands.set(props.help.name, props);
     });
 });
-/*
+
 const port = 80
 app.get('/www', (err, res, req) => {
     if (err) return err;
@@ -64,11 +64,11 @@ app.use(express.static('www'), (req, res, next, err) => {
     res.status(404).send("Error 404. Not found")
 })
 
-app.listen(80, (err) => {
+app.listen(process.env.PORT || 80, (err) => {
     if (err) return err;
     console.log('[STARTUP] Express server is up on port 80')
 })
-*/
+
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
     console.log(`${config.name} is online on ${Client.guilds.size} servers`);
