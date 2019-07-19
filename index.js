@@ -61,7 +61,7 @@ app.use(express.static('www'), (req, res, next, err) => {
     res.status(404).send("Error 404. Not found")
 })
 
-app.listen(443 || 80, (err) => {
+app.listen(process.env.PORT || 80, (err) => {
     console.log('[STARTUP] Express server is up on port 80')
 })
 
