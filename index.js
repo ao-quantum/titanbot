@@ -55,17 +55,13 @@ fs.readdir("./commands", (err, files) => {
 });
 
 const port = 80
-app.get('/www', (err, res, req) => {
-    if (err) return err;
-});
+app.get('/www');
 
 app.use(express.static('www'), (req, res, next, err) => {
-    if (err) return err;
     res.status(404).send("Error 404. Not found")
 })
 
 app.listen(process.env.PORT || 80, (err) => {
-    if (err) return err;
     console.log('[STARTUP] Express server is up on port 80')
 })
 
