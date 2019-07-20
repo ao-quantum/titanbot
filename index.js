@@ -154,7 +154,7 @@ Client.on("ready", async () => {
 //                                    GUILD MEMBER ADD/REMOVE TRIGGERS
 
 //                                           BUILD SUCCEEDED
-
+/*
 Client.on("guildMemberAdd", member => {
     let welcomechannelenable;
     let dbwelcomechannelenable;
@@ -195,7 +195,7 @@ Client.on("guildMemberRemove", member => {
         channel.send(guildMemberRemoveEmbed);
     };
 });
-
+*/
 Client.on("message", msg => {
     if (msg.author.bot) return;
     //if (msg.content === (prefix) + "rule") {
