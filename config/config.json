@@ -20,5 +20,7 @@
     "botstatusonline": "Under Development. Usable",
 
     "token": "secret",
-    "name": "Titan"
+    "name": "Titan",
+
+    "ytapikey": "AIzaSyBCIuxN2khFS3THO-1EZhz3bktm-Id1NwQ"
 }
