@@ -13,7 +13,7 @@ const ffmpeg = require('ffmpeg-static');
 const Youtube = require('simple-youtube-api');
 const opus = require('node-opus');
 Client.commands = new discord.Collection();
-Client.login(process.env.titanbot_token).catch(console.error);
+Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
 
 let prefix;
 
