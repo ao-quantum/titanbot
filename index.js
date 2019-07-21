@@ -3,15 +3,14 @@ const Util = require('discord.js')
 const Client = new discord.Client;
 const config = require('./config/config.json');
 const antispam = require('discord-anti-spam');
-const request = require('request');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
 const express = require('express');
 const app = express()
 const ytdl = require('ytdl-core');
+const ffmpeg = require('ffmpeg-static')
 const Youtube = require('simple-youtube-api')
-const ffmpeg = require('ffmpeg')
 Client.commands = new discord.Collection();
 
 Client.login(process.env.titanbot_token).catch(console.error);
@@ -57,7 +56,7 @@ fs.readdir("./commands", (err, files) => {
         Client.commands.set(props.help.name, props);
     });
 });
-/*
+
 const port = 80
 app.get('/www');
 
@@ -68,7 +67,7 @@ app.use(express.static('www'), (req, res, next, err) => {
 app.listen(process.env.PORT || 80, (err) => {
     console.log('[STARTUP] Express server is up on port 80')
 })
-*/
+
 Client.on("ready", () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
     console.log(`${config.name} is online on ${Client.guilds.size} servers`);
@@ -475,6 +474,8 @@ async function handleVideo(video, msg, voiceChannel, playlist = false) {
         else {
             const embed = new discord.RichEmbed()
             .setAuthor(`✅ ${song.title} has been added to the queue!`)
+            .setColor(color);
+            msg.channel.send(embed);
         };
     }
     return undefined;
@@ -499,7 +500,7 @@ function play(guild, song) {
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
     const embed = new discord.RichEmbed()
-    .setAuthor(`🎶 Start playing: **${song.title}**`)
+    .setAuthor(`🎶 Start playing: ${song.title}`)
     .setColor(color);
     serverQueue.textChannel.send(embed);
 }
