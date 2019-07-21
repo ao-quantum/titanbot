@@ -9,9 +9,7 @@ const fs = require('fs');
 const express = require('express');
 const app = express()
 const ytdl = require('ytdl-core');
-const ffmpeg = require('ffmpeg-static');
 const Youtube = require('simple-youtube-api');
-const opus = require('node-opus');
 Client.commands = new discord.Collection();
 Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
 
