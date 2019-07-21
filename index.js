@@ -28,7 +28,7 @@ const con = mysql.createConnection({
 
 con.connect(err => {
     if (err) throw err;
-    console.log("[STARTUP] Connected to MySql database");
+    console.log("[STARTUP] Connected to MySQL database");
 });
 
 //               get the prefix
@@ -97,7 +97,7 @@ Client.on("message", msg => {
 
     let commandFile = Client.commands.get(cmd.slice(prefix.length))
     if (commandFile) {
-        commandFile.run(Client, msg, args)
+        commandFile.run(Client, msg, args, con)
     }
 });
 
@@ -145,6 +145,13 @@ Client.on("ready", async () => {
         await delay(3000)
     };
 });
+
+Client.on("ready", async () => {
+    while (true) {
+        await delay(3600000)
+        con.query('SELECT * FROM titanbot_warns');
+    };
+})
 
 //                                    GUILD MEMBER ADD/REMOVE TRIGGERS
 
@@ -217,7 +224,10 @@ function generateXp() {
 Client.on("message", msg => {
     if (msg.author.bot) return;
     con.query(`SELECT * FROM titanbot_xp WHERE id = '${msg.author.id}'`, (err, rows) => {
-        if (err) throw err;
+        if (err) {
+            console.log(err)
+            return con.connect();
+        };
 
         let sql
 
@@ -272,11 +282,10 @@ Client.on('message', async msg => { // eslint-disable-line
             for (const video of Object.values(videos)) {
                 const video2 = await youtube.getVideoByID(video.id); // eslint-disable-line no-await-in-loop
                 await handleVideo(video2, msg, voiceChannel, true); // eslint-disable-line no-await-in-loop
-            }
-            {
+            } {
                 const embed = new discord.RichEmbed()
-                .setAuthor(`${playlist.title} has been added to the queue!`)
-                .setColor(color);
+                    .setAuthor(`${playlist.title} has been added to the queue!`)
+                    .setColor(color);
                 return msg.channel.send(embed)
             };
         } else {
@@ -287,9 +296,9 @@ Client.on('message', async msg => { // eslint-disable-line
                     var videos = await youtube.searchVideos(searchString, 10);
                     let index = 0;
                     const embed = new discord.RichEmbed()
-                    .addField('Song selection:', `${videos.map(video2 => `**${++index} -** ${video2.title}`).join('\n')}`)
-                    .setColor(color)
-                    .setFooter(footer);
+                        .addField('Song selection:', `${videos.map(video2 => `**${++index} -** ${video2.title}`).join('\n')}`)
+                        .setColor(color)
+                        .setFooter(footer);
                     msg.channel.send(embed)
                     // eslint-disable-next-line max-depth
                     try {
@@ -301,8 +310,8 @@ Client.on('message', async msg => { // eslint-disable-line
                     } catch (err) {
                         console.error(err);
                         const embed = new discord.RichEmbed()
-                        .setAuthor('❌ No or invalid value entered, cancelling video selection.')
-                        .setColor(color);
+                            .setAuthor('❌ No or invalid value entered, cancelling video selection.')
+                            .setColor(color);
                         return msg.channel.send(embed);
                     }
                     const videoIndex = parseInt(response.first().content);
@@ -317,33 +326,33 @@ Client.on('message', async msg => { // eslint-disable-line
     } else if (command === 'skip') {
         if (!msg.member.voiceChannel) {
             const embed = new discord.RichEmbed()
-            .setAuthor("❌ You are not in a voice channel")
-            .setColor(color);
+                .setAuthor("❌ You are not in a voice channel")
+                .setColor(color);
             return msg.channel.send(embed)
         }
         if (!serverQueue) {
             const embed = new discord.RichEmbed()
-            .setAuthor('There is nothing playing that I could skip for you.')
-            .setColor(color);
+                .setAuthor('There is nothing playing that I could skip for you.')
+                .setColor(color);
             return msg.channel.send(embed);
         }
-        const embed =  new discord.RichEmbed()
-        .setAuthor(`✅ Song skipped!`)
-        .setColor(color);
+        const embed = new discord.RichEmbed()
+            .setAuthor(`✅ Song skipped!`)
+            .setColor(color);
         msg.channel.send(embed);
         serverQueue.connection.dispatcher.end();
         return undefined;
     } else if (command === 'stop') {
         if (!msg.member.voiceChannel) {
             const embed = new discord.RichEmbed()
-            .setAuthor("❌ You are not in a voice channel")
-            .setColor(color);
+                .setAuthor("❌ You are not in a voice channel")
+                .setColor(color);
             return msg.channel.send(embed)
         };
         if (!serverQueue) {
             const embed = new discord.RichEmbed()
-            .setAuthor("❌ There are no songs in the queue")
-            .setColor(color);
+                .setAuthor("❌ There are no songs in the queue")
+                .setColor(color);
             return msg.channel.send(embed);
         };
         serverQueue.songs = [];
@@ -352,83 +361,83 @@ Client.on('message', async msg => { // eslint-disable-line
     } else if (command === 'volume') {
         if (!msg.member.voiceChannel) {
             const embed = new discord.RichEmbed()
-            .setAuthor("❌ You are not in a voice channel")
-            .setColor(color);
+                .setAuthor("❌ You are not in a voice channel")
+                .setColor(color);
             return msg.channel.send(embed)
         };
         if (!serverQueue) {
             const embed = new discord.RichEmbed()
-            .setAuthor("❌ There are no songs in the queue")
-            .setColor(color);
+                .setAuthor("❌ There are no songs in the queue")
+                .setColor(color);
             return msg.channel.send(embed);
         };
         if (!args[1]) {
             const embed = new discord.RichEmbed()
-            .setAuthor(`ℹ The current volume is ${serverQueue.volume}`)
-            .setColor(color);
+                .setAuthor(`ℹ The current volume is ${serverQueue.volume}`)
+                .setColor(color);
             return msg.channel.send(embed)
         };
         serverQueue.volume = args[1];
         if (serverQueue.volume > 5 || serverQueue.volume < 0.1) {
             const embed = new discord.RichEmbed()
-            .setAuthor(`❌ The volume cannot be over 5 or under 0.1`)
-            .setColor(color);
+                .setAuthor(`❌ The volume cannot be over 5 or under 0.1`)
+                .setColor(color);
             return msg.channel.send(embed)
         }
         serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
         const embed = new discord.RichEmbed()
-        .setAuthor(`✅ I set the volume to: **${args[1]}**`)
-        .setColor(color);
+            .setAuthor(`✅ I set the volume to: **${args[1]}**`)
+            .setColor(color);
         return msg.channel.send(embed);
     } else if (command === 'np') {
         if (!serverQueue) {
             const embed = new discord.RichEmbed()
-            .setAuthor(`❌ There are no songs in the queue`)
-            .setColor(color);
+                .setAuthor(`❌ There are no songs in the queue`)
+                .setColor(color);
             return msg.channel.send(embed);
         };
         const embed = new discord.RichEmbed()
-        .setAuthor(`🎶 Now playing: **${serverQueue.songs[0].title}**`)
-        .setColor(color);
+            .setAuthor(`🎶 Now playing: **${serverQueue.songs[0].title}**`)
+            .setColor(color);
         return msg.channel.send(embed);
     } else if (command === 'queue') {
         if (!serverQueue) {
             const embed = new discord.RichEmbed()
-            .setAuthor(`❌ There are no songs in the queue`)
-            .setColor(color);
+                .setAuthor(`❌ There are no songs in the queue`)
+                .setColor(color);
             return msg.channel.send(embed);
         };
         const embed = new discord.RichEmbed()
-        .setAuthor(`Now playing: ${serverQueue.songs[0].title}`)
-        .addField(`Song queue:`, `${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}`)
-        .setColor(color)
-        .setFooter(footer);
+            .setAuthor(`Now playing: ${serverQueue.songs[0].title}`)
+            .addField(`Song queue:`, `${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}`)
+            .setColor(color)
+            .setFooter(footer);
         msg.channel.send(embed)
     } else if (command === 'pause') {
         if (serverQueue && serverQueue.playing) {
             serverQueue.playing = false;
             serverQueue.connection.dispatcher.pause();
             const embed = new discord.RichEmbed()
-            .setAuthor('⏸ Paused')
-            .setColor(color);
+                .setAuthor('⏸ Paused')
+                .setColor(color);
             return msg.channel.send(embed);
         }
         const embed = new discord.RichEmbed()
-        .setAuthor('ℹ There is nothing playing')
-        .setColor(color);
+            .setAuthor('ℹ There is nothing playing')
+            .setColor(color);
         return msg.channel.send(embed);
     } else if (command === 'resume') {
         if (serverQueue && !serverQueue.playing) {
             serverQueue.playing = true;
             serverQueue.connection.dispatcher.resume();
             const embed = new discord.RichEmbed()
-            .setAuthor("▶ Resumed")
-            .setColor(color);
+                .setAuthor("▶ Resumed")
+                .setColor(color);
             return msg.channel.send(embed);
         }
         const embed = new discord.RichEmbed()
-        .setAuthor('ℹ There is nothing playing')
-        .setColor(color);
+            .setAuthor('ℹ There is nothing playing')
+            .setColor(color);
         return msg.channel.send(embed);
     }
 
@@ -471,8 +480,8 @@ async function handleVideo(video, msg, voiceChannel, playlist = false) {
         if (playlist) return undefined;
         else {
             const embed = new discord.RichEmbed()
-            .setAuthor(`✅ ${song.title} has been added to the queue!`)
-            .setColor(color);
+                .setAuthor(`✅ ${song.title} has been added to the queue!`)
+                .setColor(color);
             msg.channel.send(embed);
         };
     }
@@ -498,7 +507,7 @@ function play(guild, song) {
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
     const embed = new discord.RichEmbed()
-    .setAuthor(`🎶 Start playing: ${song.title}`)
-    .setColor(color);
+        .setAuthor(`🎶 Start playing: ${song.title}`)
+        .setColor(color);
     serverQueue.textChannel.send(embed);
 }

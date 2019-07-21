@@ -1,8 +1,7 @@
 const discord = require('discord.js')
 const config = require('../config/config.json')
-const mysql = require('mysql')
 
-module.exports.run = (Client, msg, args) => {
+module.exports.run = (Client, msg, args, con) => {
     let color = config.color;
     let footer = config.footer;
     con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
