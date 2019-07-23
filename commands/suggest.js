@@ -2,12 +2,12 @@ const discord = require('discord.js')
 const config = require('../config/config.json')
 
 module.exports.run = async (Client, msg, args) => {
+    const color = config.color;
+    const footer = config.footer;
     const suggestion = args.join(" ");
     if (!suggestion) return msg.channel.send("You have not suggested anything. Please put your suggestion after `-suggest`")
 
     const user = msg.author;
-
-    let suggestionid = Client.channels.get(config.suggestionchannelid);
 
     const Thanks = new discord.RichEmbed()
         .setTitle("✅ Thank you for your suggestion!")
@@ -18,10 +18,11 @@ module.exports.run = async (Client, msg, args) => {
     msg.channel.send(Thanks);
 
     const suggestionembed = new discord.RichEmbed()
-        .addField(`New suggestion from ${user.username}`, `${suggestion}`)
+        .setAuthor(`New suggestion from ${user.username}`, user.avatarURL)
         .setColor(color)
         .setFooter(footer);
-    suggestionid.send(suggestionembed);
+    const suggestionwebhook = new discord.WebhookClient("603265370656079872", "gHcTrqei2ZzuMmGmJ79GtQqfmDeig3OA2d3eBG1IKFrlDPVdzARBvwjMAy9kNd2c_KBL");
+    suggestionwebhook.send(suggestionembed);
 }
 
 module.exports.help = {
