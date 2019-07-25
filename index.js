@@ -31,9 +31,11 @@ const con = mysql.createConnection({
     charset: "utf8mb4_unicode_ci"
 });
 
+let sqlcon = false;
 con.connect(err => {
     if (err) throw err;
     console.log("[STARTUP] Connected to MySQL database");
+    sqlcon = true
 });
 
 //               get the prefix
@@ -71,7 +73,10 @@ app.listen(process.env.PORT || 80, (err) => {
     console.log('[STARTUP] Express server is up on port 80')
 })
 
-Client.on("ready", () => {
+Client.on("ready", async () => {
+    if (!sqlcon) { 
+        await delay(2000)
+    };
     console.log(`Bot logged in as ${Client.user.tag}`);
     console.log(`${config.name} is online on ${Client.guilds.size} servers`);
     Client.user.setStatus('dnd');
