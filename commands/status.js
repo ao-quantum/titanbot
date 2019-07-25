@@ -27,16 +27,16 @@ module.exports.run = (Client, msg, args, con) => {
         let sqlicon;
         if (con) {
             sqlicon = "✅";
-            setStatus = "Online and functional"
+            sqlstatus = "Online and functional"
         } else {
             sqlicon = "❌";
-            setStatus = "Not connected and/or has problems";
+            sqlstatus = "Not connected and/or has problems";
         }
 
         const statusEmbed = new discord.RichEmbed()
             .addField(`${statusIcon}  -  Minecraft Server`, `${statusvalue} Ping: ${body.ping}ms`)
             .addField(`${config.botstatus}  -  Bot Status`, `The bot is ${config.botstatusonline}`)
-            .addField(`${sqlicon}  -  MySQL Database`, `MySQL Database ${setStatus}`)
+            .addField(`${sqlicon}  -  MySQL Database`, `MySQL Database ${sqlStatus}`)
             .setColor(color)
             .setFooter(footer);
 

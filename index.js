@@ -10,8 +10,13 @@ const express = require('express');
 const app = express()
 const ytdl = require('ytdl-core');
 const Youtube = require('simple-youtube-api');
+const wit = require('node-wit')
 Client.commands = new discord.Collection();
 Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
+
+const witclient = new wit.Wit({
+    accessToken: "D4UBLMZJW7P4ENGGZWZI7C7A6GXPV3CY"
+})
 
 let prefix;
 
@@ -208,6 +213,16 @@ Client.on("message", msg => {
     // const rule1 = new discord.RichEmbed()
     //   .setTitle
     // }
+
+    const channel = msg.guild.channels.get('603315554467577856');
+    const disallowedch = msg.channel;
+    if (disallowedch.id != '603315554467577856') return
+    const message = msg.content;
+    witclient.message('Hello there', {})
+        .then((data) => {
+            console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
+        })
+        .catch(console.error);
 });
 
 //                                     XP LEVEL SYSTEM
