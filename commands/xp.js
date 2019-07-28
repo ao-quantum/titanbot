@@ -8,22 +8,29 @@ module.exports.run = (Client, msg, args, con) => {
 
     con.query(`SELECT * FROM titanbot_xp WHERE id = '${target.id}'`, (err, rows) => {
         if (err) throw err;
-        let xp = rows[0].xp;
 
-        const yourxp = new discord.RichEmbed()
+        const xp = rows[0].xp.catch(() => {
+            if (!xp) return msg.channel.send('That user has no xp or does not exist in this server!')
+        });
+
+        if (target === msg.author) {
+            const yourxp = new discord.RichEmbed()
             .setAuthor(`You have ${xp}xp`, target.avatarURL)
             .setColor(color)
             .setFooter(footer);
-
-        const targetxp = new discord.RichEmbed()
+            msg.channel.send(yourxp)
+        } else if (target === msg.mentions.users.first()) {
+            const targetxp = new discord.RichEmbed()
             .setAuthor(`${target.username} has ${xp}xp`, target.avatarURL)
             .setColor(color)
             .setFooter(footer);
-
-        if (target === msg.author) {
-            msg.channel.send(yourxp)
-        } else if (target === msg.mentions.users.first()) {
             msg.channel.send(targetxp)
+        } else if (!xp) {
+            const embed = new discord.RichEmbed()
+            .setAuthor('That user either has no xp or does not exist in this server!')
+            .setColor(color)
+            .setFooter(footer);
+            msg.channel.send(embed);
         }
     });
 }

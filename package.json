@@ -39,8 +39,6 @@
     "opusscript": "0.0.6",
     "path": "^0.12.7",
     "request": "^2.88.0",
-    "simple-youtube-api": "^5.2.1",
-    "yt-search": "^0.4.1",
-    "ytdl-core": "^0.29.3"
+    "yt-search": "^0.4.1"
   }
 }
