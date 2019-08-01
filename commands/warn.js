@@ -14,12 +14,10 @@ module.exports.run = (Client, msg, args, con) => {
                 const reason = args.join(" ").slice(22)
                 if (err) throw err;
 
-                const logchannel = Client.channels.get(`${config.logchannel}`) // define log channel
-
                 if (rows.length < 1) {
                     sql = `INSERT INTO titanbot_warns (id, warns) VALUES ('${member.id}', 1)`
                 } else {
-                    let warns = rows[0].warns
+                    let warns = rows[0].warns;
                     sql = `UPDATE titanbot_warns SET warns = ${warns + 1} WHERE id = '${member.id}'`
                 }
                 con.query(sql).then(() => {
@@ -39,38 +37,46 @@ module.exports.run = (Client, msg, args, con) => {
                     loghook.send(warnlog) // send the log
 
                     member.send("You have been warned on TitanForgedMC for " + reason).catch(() => {
-                        return;
+                        return msg.channel.send('An error occured while notifying the user');
                     });
+                }).then(() => {
                     con.query(`SELECT * FROM titanbot_warns WHERE id = '${member.id}'`, (err, rows) => {
-                        if (rows[0].warns >= 3) { // if the user has more than 3 warns then kick him/her
+                        if (rows[0].warns = 3) { // if the user has 3 warns then kick him/her
                             user.kick("Exceeding the 3 warnings").then(() => {
-    
+
                                 const exceed3warnsembed = new discord.RichEmbed()
                                     .setTitle(`${member.tag} has been automatically kicked for exceeding 3 warns`)
                                     .setColor(color)
                                     .setFooter(footer);
-    
+
                                 loghook.send(exceed3warnsembed);
+                                member.send(`You have been kicked from TitanForgedMC for exceeding your 3 warnings!`)
                             }).catch((err) => {
-                                return console.log(err)
-                            }) // on error, 
+                                console.log(err);
+                                return msg.channel.send('An error occured! Error: ' + err)
+                            }); // on error, 
                         } else if (rows[0].warns >= 5) { // if the user exceeds 5 warnings then 
                             user.ban("Exceeding the 5 warnings").then(() => {
-    
+
                                 const exceed5warnsembed = new discord.RichEmbed()
                                     .setTitle(`${member.tag} has been automatically banned for exceeding 5 warnings`)
                                     .setColor(color)
                                     .setFooter(footer);
-    
-                                loghook.send(exceed5warnsembed); //send the log
-                            }).catch((err) => {
-                                return console.log(err)
-                            }); // on an error, log it
-                        }
-                    })
-                }) // add the warning to the user in the mysql database
 
-            })
+                                loghook.send(exceed5warnsembed); //send the log
+                                member.send('You have been banned on TitanForgedMC for exceeding 3 warnings!')
+                            }).catch((err) => {
+                                console.log(err)
+                                return msg.channel.send('An error occured! ' + err)
+                            });
+                        };
+                    })
+                })
+
+            }).catch((err) => {
+                console.log(err)
+                return msg.channel.send('An error occured! ' + err);
+            });
         } else {
             const usernotfound = new discord.RichEmbed()
                 .setTitle("❌ The user was not found on this server")
