@@ -8,10 +8,9 @@ module.exports.run = (Client, msg, args, con) => {
 
     con.query(`SELECT * FROM titanbot_xp WHERE id = '${target.id}'`, (err, rows) => {
         if (err) throw err;
+        if (!rows[0]) return msg.channel.send('❌ That user does not have any XP or is not in this server')
 
-        const xp = rows[0].xp.catch(() => {
-            if (!xp) return msg.channel.send('That user has no xp or does not exist in this server!')
-        });
+        const xp = rows[0].xp
 
         if (target === msg.author) {
             const yourxp = new discord.RichEmbed()
