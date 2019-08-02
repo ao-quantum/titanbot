@@ -255,7 +255,10 @@ Client.on("message", msg => {
             .setDescription('We all hate rules, yes, but to ensure a safe and enjoyable place for everyone, we have to enforce rules. Failing to abide by them may lead to appropriate sanctions being taken')
             .setColor(color);
     }
+});
+
+Client.on('message', msg => {
     if (msg.content == 'creeper') {
         msg.channel.send('aw man')
     }
-});
+})
