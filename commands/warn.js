@@ -20,63 +20,59 @@ module.exports.run = (Client, msg, args, con) => {
                     let warns = rows[0].warns;
                     sql = `UPDATE titanbot_warns SET warns = ${warns + 1} WHERE id = '${member.id}'`
                 }
-                con.query(sql).then(() => {
-                    msg.delete() // delete the warning command
-                    const warnembed = new discord.RichEmbed()
-                        .setTitle(`✅ ${member.username} has been warned`)
-                        .setColor(color)
-                        .setFooter(footer);
+                msg.delete() // delete the warning command
+                con.query(sql);
+                const warnembed = new discord.RichEmbed()
+                    .setTitle(`✅ ${member.username} has been warned`)
+                    .setColor(color)
+                    .setFooter(footer);
 
-                    msg.channel.send(warnembed) // sends the warn in the chat
+                msg.channel.send(warnembed) // sends the warn in the chat
 
-                    const warnlog = new discord.RichEmbed()
-                        .addField(`New warning`, `${msg.author.tag} has warned ${member} for ${reason}`)
-                        .setColor(color)
-                        .setFooter(footer);
+                const warnlog = new discord.RichEmbed()
+                    .addField(`New warning`, `${msg.author.tag} has warned ${member} for ${reason}`)
+                    .setColor(color)
+                    .setFooter(footer);
 
-                    loghook.send(warnlog) // send the log
+                loghook.send(warnlog) // send the log
 
-                    member.send("You have been warned on TitanForgedMC for " + reason).catch(() => {
-                        return msg.channel.send('An error occured while notifying the user');
-                    });
-                }).then(() => {
-                    con.query(`SELECT * FROM titanbot_warns WHERE id = '${member.id}'`, (err, rows) => {
-                        if (rows[0].warns = 3) { // if the user has 3 warns then kick him/her
-                            user.kick("Exceeding the 3 warnings").then(() => {
+                member.send("You have been warned on TitanForgedMC for " + reason).catch(() => {
+                    return msg.channel.send('An error occured while notifying the user');
+                });
+                
+                con.query(`SELECT * FROM titanbot_warns WHERE id = '${member.id}'`, (err, rows) => {
+                    let warnings = rows[0].warns;
+                    if (warnings == 3 || warnings == "3") { // if the user has 3 warns then kick him/her
+                        user.kick("Exceeding the 3 warnings").then(() => {
 
-                                const exceed3warnsembed = new discord.RichEmbed()
-                                    .setTitle(`${member.tag} has been automatically kicked for exceeding 3 warns`)
-                                    .setColor(color)
-                                    .setFooter(footer);
+                            const exceed3warnsembed = new discord.RichEmbed()
+                                .setTitle(`${member.tag} has been automatically kicked for exceeding 3 warns`)
+                                .setColor(color)
+                                .setFooter(footer);
 
-                                loghook.send(exceed3warnsembed);
-                                member.send(`You have been kicked from TitanForgedMC for exceeding your 3 warnings!`)
-                            }).catch((err) => {
-                                console.log(err);
-                                return msg.channel.send('An error occured! Error: ' + err)
-                            }); // on error, 
-                        } else if (rows[0].warns >= 5) { // if the user exceeds 5 warnings then 
-                            user.ban("Exceeding the 5 warnings").then(() => {
+                            loghook.send(exceed3warnsembed);
+                            member.send(`You have been kicked from TitanForgedMC for exceeding your 3 warnings!`)
+                        }).catch((err) => {
+                            console.log(err);
+                            return msg.channel.send('An error occured! Error: ' + err)
+                        }); // on error, 
+                    } else if (rows[0].warns >= 5) { // if the user exceeds 5 warnings then 
+                        user.ban("Exceeding the 5 warnings").then(() => {
 
-                                const exceed5warnsembed = new discord.RichEmbed()
-                                    .setTitle(`${member.tag} has been automatically banned for exceeding 5 warnings`)
-                                    .setColor(color)
-                                    .setFooter(footer);
+                            const exceed5warnsembed = new discord.RichEmbed()
+                                .setTitle(`${member.tag} has been automatically banned for exceeding 5 warnings`)
+                                .setColor(color)
+                                .setFooter(footer);
 
-                                loghook.send(exceed5warnsembed); //send the log
-                                member.send('You have been banned on TitanForgedMC for exceeding 3 warnings!')
-                            }).catch((err) => {
-                                console.log(err)
-                                return msg.channel.send('An error occured! ' + err)
-                            });
-                        };
-                    })
+                            loghook.send(exceed5warnsembed); //send the log
+                            member.send('You have been banned on TitanForgedMC for exceeding 3 warnings!')
+                        }).catch((err) => {
+                            console.log(err)
+                            return msg.channel.send('An error occured! ' + err)
+                        });
+                    };
                 })
-
-            }).catch((err) => {
-                console.log(err)
-                return msg.channel.send('An error occured! ' + err);
-            });
+            })
         } else {
             const usernotfound = new discord.RichEmbed()
                 .setTitle("❌ The user was not found on this server")

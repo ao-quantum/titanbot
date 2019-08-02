@@ -5,6 +5,7 @@ const antispam = require('discord-anti-spam');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
+const request = require('request');
 const express = require('express');
 const app = express();
 const wit = require('node-wit');
@@ -145,8 +146,9 @@ Client.on("ready", async () => {
 
 Client.on("ready", async () => {
     while (true) {
-        await delay(3600000)
+        await delay(3599999)
         con.query('SELECT * FROM titanbot_warns');
+        request('https://bot.titanforgedmc.ml');
     };
 })
 
@@ -156,11 +158,9 @@ Client.on("ready", async () => {
 
 Client.on("guildMemberAdd", member => {
     let welcomechannelenable;
-    let dbwelcomechannelenable;
-    con.query(`SELECT * FROM titanbot_cfg`, (err, rows) => {
+    con.query(`SELECT * FROM titanbot_cfg WHERE setting = 'enablewelcomeleave'`, (err, rows) => {
         if (err) throw err;
-        dbwelcomechannelenable = rows[1].value;
-        welcomechannelenable = dbwelcomechannelenable;
+        welcomechannelenable = rows[0].value;
     });
     if (welcomechannelenable = "yes") {
         var channel = member.guild.channels.get(config.welcomechannel);
