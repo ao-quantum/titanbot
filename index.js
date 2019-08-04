@@ -146,7 +146,7 @@ Client.on("ready", async () => {
 
 Client.on("ready", async () => {
     while (true) {
-        await delay(3599999)
+        await delay(3500000)
         con.query('SELECT * FROM titanbot_warns');
         request('https://bot.titanforgedmc.ml');
     };
