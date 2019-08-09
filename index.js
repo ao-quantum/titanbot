@@ -22,11 +22,10 @@ const color = config.color;
 const footer = config.footer;
 
 const con = mysql.createPool({
-    host: "na-sql.pebblehost.com",
-    database: "customer_77991",
-    user: "customer_77991",
-    password: "7987273d7e",
-    charset: "utf8mb4_unicode_ci"
+    host: "remotemysql.com",
+    database: "bjRzsNh8cc",
+    user: "bjRzsNh8cc",
+    password: "e3TcMo23yD"
 });
 
 //               get the prefix
