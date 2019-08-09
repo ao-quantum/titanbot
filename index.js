@@ -12,28 +12,28 @@ const wit = require('node-wit');
 Client.commands = new discord.Collection();
 Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
 
-const witclient = new wit.Wit({
-    accessToken: "D4UBLMZJW7P4ENGGZWZI7C7A6GXPV3CY"
-})
-
 var prefix;
 
 const color = config.color;
 const footer = config.footer;
 
 const con = mysql.createPool({
-    host: "remotemysql.com",
-    database: "bjRzsNh8cc",
-    user: "bjRzsNh8cc",
-    password: "e3TcMo23yD"
+    host: process.env.titanbot_host,
+    database: process.env.titanbot_db,
+    user: process.env.titanbot_db,
+    password: process.env.titanbot_dbpsw
 });
 
 //               get the prefix
-con.query(`SELECT * FROM titanbot_cfg WHERE setting = 'prefix'`, (err, rows) => {
-    if (err) throw err;
 
-    prefix = rows[0].value;
-});
+module.exports.getprefix = () => {
+    con.query(`SELECT * FROM titanbot_cfg WHERE setting = 'prefix'`, (err, rows) => {
+        if (err) throw err;
+    
+        prefix = rows[0].value;
+    });
+}
+this.getprefix()
 
 fs.readdir("./commands", (err, files) => {
     if (err) console.log(err);
