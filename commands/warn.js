@@ -1,3 +1,11 @@
+/***********************************************
+*
+*                 Titan Bot
+*
+*          Made by Quantonium#6562
+*        © 2019 Aditya "Quantum" Das
+*
+************************************************/
 const discord = require('discord.js')
 const config = require('../config/config.json')
 
@@ -10,7 +18,7 @@ module.exports.run = (Client, msg, args, con) => {
         user = msg.guild.member(member)
         if (user) {
             con.query(`SELECT * FROM titanbot_warns WHERE id = '${member.id}'`, (err, rows) => {
-                const loghook = new discord.WebhookClient("600431831866933285", "bLdpNW7oATIpTQMzLNzQY_s9YvDLr-FjZdLymBlwLlYacnV2NY76RvPqmA1eXxbq2WWI")
+                const loghook = new discord.WebhookClient("webhook_id", "webhook_token")
                 const reason = args.join(" ").slice(22)
                 if (err) throw err;
 

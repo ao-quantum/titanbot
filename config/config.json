@@ -1,25 +1,22 @@
 {
-    "welcomechannel": "573124496681205761",
+    "welcomechannel": "ch_id",
     "welcomechannelenable": true,
 
     "displayname": "TitanForgedMC discord", 
 
-    "serverip": "https://api.mcsrvstat.us/2/play.titanforgedmc.ml",
+    "serverip": "mc_server_query_api_link",
 
-    "logchannel" :"599960120834785281",
+    "logchannel" :"ch_id",
 
-    "reportchannel": "574058435566370820",
+    "reportchannel": "ch_id",
 
     "presence": true,
 
     "color": "#dd0404",
-    "footer": "© Titan - Developed by Quantum#6409 | V1.6",
+    "footer": "© Titan - Developed by Quantum#3532 | V1.6",
 
     "botstatus": "✅",
     "botstatusonline": "Builds Succeeding",
 
-    "token": "secret",
-    "name": "Titan",
-
-    "ytapikey": "AIzaSyBCIuxN2khFS3THO-1EZhz3bktm-Id1NwQ"
+    "name": "Titan"
 }

@@ -1,3 +1,11 @@
+/***********************************************
+*
+*                 Titan Bot
+*
+*          Made by Quantonium#6562
+*        © 2019 Aditya "Quantum" Das
+*
+************************************************/
 const discord = require('discord.js')
 const config = require('../config/config.json')
 
@@ -8,7 +16,7 @@ module.exports.run = (Client, msg, args, con) => {
         if (err) throw err;
         const notifyrole = rows[3].value;
 
-        msg.member.addRole(`${notifyrole}`); // 599646025757753344 599646025757753344
+        msg.member.addRole(`${notifyrole}`);
         const roleadded = new discord.RichEmbed()
             .setTitle('✅ You will now recieve notifications!')
             .setColor(color)

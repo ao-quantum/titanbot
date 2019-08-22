@@ -1,3 +1,11 @@
+/***********************************************
+*
+*                 Titan Bot
+*
+*          Made by Quantonium#6562
+*        © 2019 Aditya "Quantum" Das
+*
+************************************************/
 const discord = require('discord.js')
 const config = require('../config/config.json')
 
@@ -21,7 +29,7 @@ module.exports.run = async (Client, msg, args) => {
         .setAuthor(`New suggestion from ${user.username}`, user.avatarURL)
         .setColor(color)
         .setFooter(footer);
-    const suggestionwebhook = new discord.WebhookClient("603265370656079872", "gHcTrqei2ZzuMmGmJ79GtQqfmDeig3OA2d3eBG1IKFrlDPVdzARBvwjMAy9kNd2c_KBL");
+    const suggestionwebhook = new discord.WebhookClient("webhook_id", "webhook_token");
     suggestionwebhook.send(suggestionembed);
 }
 

@@ -1,3 +1,11 @@
+/***********************************************
+*
+*                 Titan Bot
+*
+*          Made by Quantonium#6562
+*        © 2019 Aditya "Quantum" Das
+*
+************************************************/
 const discord = require('discord.js');
 const Client = new discord.Client;
 const config = require('./config/config.json');
@@ -5,12 +13,8 @@ const antispam = require('discord-anti-spam');
 const delay = require('delay');
 const mysql = require('mysql');
 const fs = require('fs');
-const request = require('request');
-const express = require('express');
-const app = express();
-const wit = require('node-wit');
 Client.commands = new discord.Collection();
-Client.login('NTc2OTUwMzA4Mjc4ODk0NjIy.XNd9cg.RFPLebQp-x6UO-rMxIs-clE7vrQ').catch(console.error);
+Client.login(process.env.token).catch(console.error);
 
 var prefix;
 
@@ -50,17 +54,6 @@ fs.readdir("./commands", (err, files) => {
         Client.commands.set(props.help.name, props);
     });
 });
-
-const port = 80
-app.get('/www');
-
-app.use(express.static('www'), (req, res, next, err) => {
-    res.status(404).send("Error 404. Not found")
-})
-
-app.listen(process.env.PORT || 80, (err) => {
-    console.log('[STARTUP] Express server is up on port 80')
-})
 
 Client.on("ready", async () => {
     console.log(`Bot logged in as ${Client.user.tag}`);
@@ -104,7 +97,7 @@ Client.on("ready", async () => {
             game: {
                 name: 'on TitanForgedMC',
                 type: "PLAYING",
-                url: "https://discord.gg/D9aQy5j"
+                url: "discord invite"
             },
             status: 'dnd',
             afk: true
@@ -114,7 +107,7 @@ Client.on("ready", async () => {
             game: {
                 name: 'Currently in Alpha',
                 type: "PLAYING",
-                url: "https://discord.gg/D9aQy5j"
+                url: "discord invite"
             },
             status: 'dnd',
             afk: true
@@ -124,7 +117,7 @@ Client.on("ready", async () => {
             game: {
                 name: 'your commands',
                 type: "LISTENING",
-                url: "https://discord.gg/D9aQy5j"
+                url: "discord invite"
             },
             status: 'dnd',
             afk: true
@@ -134,7 +127,7 @@ Client.on("ready", async () => {
             game: {
                 name: '-help',
                 type: "WATCHING",
-                url: "https://discord.gg/D9aQy5j"
+                url: "discord invite"
             },
             status: 'dnd',
             afk: true
@@ -143,11 +136,11 @@ Client.on("ready", async () => {
     };
 });
 
+//        Ping the SQL server to prevent from being timed out
 Client.on("ready", async () => {
     while (true) {
         await delay(3500000)
         con.query('SELECT * FROM titanbot_warns');
-        request('https://bot.titanforgedmc.ml');
     };
 })
 
@@ -194,28 +187,6 @@ Client.on("guildMemberRemove", member => {
     };
 });
 
-Client.on("message", msg => {
-    if (msg.author.bot) return;
-    //if (msg.content === (prefix) + "rule") {
-    //  const rulesintro = new discord.RichEmbed()
-    //    .setTitle("Welcome to TitanForgedMC")
-    //  .setDescription("Before you do anything else, please be sure to read the rules. They may be boring but are really important and make sure you and others have a good experience on our server. Failure to comply by the rules will lead to a warning, mute and ban.")
-    //     .setColor(color);
-    // const rule1 = new discord.RichEmbed()
-    //   .setTitle
-    // }
-
-    const channel = msg.guild.channels.get('603315554467577856');
-    const disallowedch = msg.channel;
-    if (disallowedch.id != '603315554467577856') return
-    const message = msg.content;
-    witclient.message('Hello there', {})
-        .then((data) => {
-            console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
-        })
-        .catch(console.error);
-});
-
 //                                     XP LEVEL SYSTEM
 
 //                                      BUILD SUCCEEDED
@@ -255,7 +226,7 @@ Client.on("message", msg => {
             .setColor(color);
     }
 });
-
+ //              creeper aw man
 Client.on('message', msg => {
     if (msg.content == 'creeper') {
         msg.channel.send('aw man')

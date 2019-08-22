@@ -1,3 +1,11 @@
+/***********************************************
+*
+*                 Titan Bot
+*
+*          Made by Quantonium#6562
+*        © 2019 Aditya "Quantum" Das
+*
+************************************************/
 const discord = require('discord.js');
 const config = require('../config/config.json');
 

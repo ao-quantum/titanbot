@@ -1,3 +1,11 @@
+/***********************************************
+*
+*                 Titan Bot
+*
+*          Made by Quantonium#6562
+*        © 2019 Aditya "Quantum" Das
+*
+************************************************/
 const discord = require('discord.js')
 const request = require('request')
 const config = require('../config/config.json')
@@ -8,7 +16,7 @@ module.exports.run = (Client, msg, args) => {
 
     const messageArray = msg.content.split(" ")
     const top = messageArray[1]
-    request('http://144.217.139.188:8081/oitc/leaderboard', {
+    request('server_oitc_leaderboard_in_json', {
         json: true
     }, (err, res, body) => {
         if (err) {
